@@ -1,0 +1,20 @@
+﻿@page
+@model OpenPOS.Identity.Pages.IndexHomeModel
+@{
+    ViewData["Title"] = "Home page";
+    Layout = "Shared/_Layout";
+}
+
+@section AfterHeader {
+    <div class="index-image">
+        <div class="content">
+            <div class="container">
+                <h1>OpenPOS ID</h1>
+                <h2>Manage your account from one place.</h2>
+                <div style="min-height: 50px" class="mt-4">
+                    <a class="btn btn-lg btn-primary" asp-page="/Account/Login">Continue</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

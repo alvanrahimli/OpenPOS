@@ -6,14 +6,30 @@
 	ViewData["title"] = "Məhsullar";
 }
 
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+	<div class="alert alert-info alert-dismissible" role="alert">
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		<div class="alert-icon">
+			<i class="far fa-fw fa-bell"></i>
+		</div>
+		<div class="alert-message">
+			<strong>@Model.Message</strong>
+		</div>
+	</div>
+}
+
 <form method="post">
 	<div style="display:flex ; justify-content: flex-start; align-items: center; width: 100%" id="barcode-div">
-		<input class="barcode-input" asp-for="SearchBarcode" placeholder="Məhsul Barkodunu Oxudun... [ENTER]">
+		<input class="barcode-input" asp-for="SearchBarcode" placeholder="Məhsul Barkodunu Oxudun... [ENTER]" value="@Model.SelectedBarcode">
 		<button class="btn btn-primary" type="submit" asp-page-handler="SearchBarcode">Məhsulu tap</button>
 		<button class="btn btn-outline-primary" type="submit" asp-page-handler="GenerateBarcode">Yeni Barkod yarat</button>
 	</div>
 </form>
 <form method="post" enctype="multipart/form-data" id="product-form">
+	<input type="hidden" asp-for="NewProduct.Barcode" value="@Model.SelectedBarcode">
+	<input type="hidden" asp-for="IsExistingProduct" value="@Model.IsExistingProduct">
+	<input type="hidden" asp-for="NewProduct.Id" value="@Model.SelectedProduct?.Id">
 	<div style="width: 100%">
 		<div class="tab mt-2">
 			<ul class="nav nav-tabs" role="tablist">
@@ -46,12 +62,12 @@
 								<div class="col-3">
 									<label class="form-label"><strong>Məhsulun Satış qiyməti</strong></label>
 									<input class="form-control" type="number" step="any" id="sale-price-input"
-									       asp-for="NewProduct.SalePrice" placeholder="Satış qiyməti">
+									       asp-for="NewProduct.SalePrice" placeholder="Satış qiyməti" oninput="calcProfit()">
 								</div>
 								<div class="col-3">
 									<label class="form-label"><strong>Məhsulun Alış qiyməti</strong></label>
 									<input class="form-control" type="number" step="any" id="purchase-price-input"
-									       asp-for="NewProduct.PurchasePrice" placeholder="Alış qiyməti">
+									       asp-for="NewProduct.PurchasePrice" placeholder="Alış qiyməti" oninput="calcProfit()">
 								</div>
 								<div class="col-3">
 									<label class="form-label"><strong>Gəlir faizi</strong></label>
@@ -82,6 +98,16 @@
 										@foreach (var category in Model.Units)
 										{
 											<option value="@category.Id">@category.DisplayName</option>
+										}
+									</select>
+								</div>
+								<div class="col-3">
+									<label class="form-label"><strong>Firmalar (vacib deyil)</strong></label>
+									<select class="form-select" asp-for="NewProduct.FirmId">
+										<option>Firma seçin</option>
+										@foreach (var firm in Model.Firms)
+										{
+											<option value="@firm.Id">@firm.Name</option>
 										}
 									</select>
 								</div>
@@ -136,3 +162,7 @@ let loadFile = function (event) {
 	image.src = URL.createObjectURL(event.target.files[0]);
 };
 </script>
+@section Scripts
+{
+	<script src="~/js/custom.js"></script>
+}

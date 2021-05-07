@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -42,9 +43,46 @@ namespace OpenPOS.Infrastructure.Repositories
             return null;
         }
 
-        public async Task<ProductDto> GetProductByBarcode(string barcode)
+        public async Task<ProductDto> GetProductByBarcode(Guid storeId, string barcode)
         {
-            throw new NotImplementedException();
+            var product = await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Barcode == barcode && p.StoreId == storeId);
+            return _mapper.Map<ProductDto>(product);
+        }
+
+        public async Task<string> GenerateBarcode(Guid storeId)
+        {
+            var barcode = Helper.GenerateRandomNumericString(12);
+            var barcodeExists = await _context.Products
+                .AsNoTracking()
+                .Where(p => p.StoreId == storeId)
+                .AnyAsync(p => p.Barcode == barcode);
+            while (barcodeExists)
+            {
+                barcode = Helper.GenerateRandomNumericString(12);
+                barcodeExists = await _context.Products
+                    .AsNoTracking()
+                    .Where(p => p.StoreId == storeId)
+                    .AnyAsync(p => p.Barcode == barcode);
+            }
+
+            return barcode;
+        }
+
+        public async Task<ProductDto> UpdateProduct(ProductDto newProduct)
+        {
+            var existingProduct = await _context.Products
+                .FirstOrDefaultAsync(p => p.Barcode == newProduct.Barcode && p.StoreId == newProduct.StoreId);
+
+            _mapper.Map(newProduct, existingProduct);
+            var dbRes = await _context.SaveChangesAsync();
+            if (dbRes > 0)
+            {
+                return _mapper.Map<ProductDto>(existingProduct);
+            }
+
+            return null;
         }
     }
 }

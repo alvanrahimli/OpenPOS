@@ -80,6 +80,7 @@ namespace OpenPOS.Web
             services.AddScoped<IProductsRepository, ProductsRepository>();
             services.AddScoped<ICategoriesRepository, CategoriesRepository>();
             services.AddScoped<IUnitsRepository, UnitsRepository>();
+            services.AddScoped<IFirmsRepository, FirmsRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

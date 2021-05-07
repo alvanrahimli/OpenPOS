@@ -9,6 +9,8 @@ namespace OpenPOS.Domain.Models
         public string Name { get; set; }
         public string Contact { get; set; }
         public string[] Tags { get; set; }
+        public Guid StoreId { get; set; }
+        public Store Store { get; set; }
 
         public List<Product> Products { get; set; }
     }

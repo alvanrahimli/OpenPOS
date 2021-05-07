@@ -19,6 +19,7 @@ namespace OpenPOS.Domain.Data
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Unit> Units { get; set; }
+        public DbSet<Firm> Firms { get; set; }
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     }
 }

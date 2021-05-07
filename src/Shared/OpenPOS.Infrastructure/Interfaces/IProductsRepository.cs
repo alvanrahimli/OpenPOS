@@ -9,6 +9,8 @@ namespace OpenPOS.Infrastructure.Interfaces
     {
         Task<ProductDto> GetProduct(Guid id);
         Task<ProductDto> CreateProduct(ProductDto input);
-        Task<ProductDto> GetProductByBarcode(string barcode);
+        Task<ProductDto> GetProductByBarcode(Guid storeId, string barcode);
+        Task<string> GenerateBarcode(Guid storeId);
+        Task<ProductDto> UpdateProduct(ProductDto newProduct);
     }
 }

@@ -181,7 +181,8 @@
 						</button>
 						<div class="dropdown-menu">
 							<button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#incomeModal"
-							        data-bs-productName="@product.Name" data-bs-productId="@product.Id" data-bs-firmId="@product.FirmId">
+							        data-bs-productName="@product.Name" data-bs-productId="@product.Id" data-bs-firmId="@product.FirmId"
+							        data-bs-unitId="@product.UnitId">
 								<span style="color: blue">Mədaxil</span>
 							</button>
 							<div class="dropdown-divider"></div>
@@ -223,10 +224,19 @@
 									<option value="Loan">Nisyə</option>
 								</select>
 							</div>
-							<div class="col-9">
+							<div class="col-7">
 								<label for="product-count" class="col-form-label">Sayı</label>
 								<input type="number" class="form-control" id="product-count"
-								       asp-for="IncomeContext.Quantity">
+								       asp-for="IncomeContext.Quantity" min="0">
+							</div>
+							<div class="col-2">
+								<label for="product-count" class="col-form-label">Sayı</label>
+								<select class="form-control disabled" id="unit-id" readonly="true" disabled>
+									@foreach (var unit in Model.Units)
+									{
+										<option value="@unit.Id">@unit.DisplayName</option>
+									}
+								</select>
 							</div>
 						</div>
 						<div class="mb-3">
@@ -265,19 +275,21 @@
       let productId = button.getAttribute('data-bs-productId')
       let productName = button.getAttribute('data-bs-productName')
       let firmId = button.getAttribute('data-bs-firmId')
-      // If necessary, you could initiate an AJAX request here
-      // and then do the updating in a callback.
+      let unitId = button.getAttribute('data-bs-unitId')
 
-      // Update the modal's content.
+      // Get inputs
       let modalTitle = incomeModal.querySelector('.modal-title')
       let productIdInput = incomeModal.querySelector('#product-id')
       let productNameInput = incomeModal.querySelector('#product-name')
       let firmIdInput = incomeModal.querySelector('#firm-id')
+      let unitIdInput = incomeModal.querySelector('#unit-id')
 	  
+      // Update the modal's content.
       modalTitle.textContent = 'Mədaxil ' + productName
       productIdInput.value = productId
       productNameInput.value = productName
       firmIdInput.value = firmId
+      unitIdInput.value = unitId
     })
 	</script>
 }

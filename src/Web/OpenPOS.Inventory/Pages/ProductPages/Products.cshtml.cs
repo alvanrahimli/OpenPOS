@@ -21,16 +21,19 @@ namespace OpenPOS.Inventory.Pages.ProductPages
         private readonly IProductsRepository _productsRepository;
         private readonly IStoresRepository _storesRepository;
         private readonly IFirmsRepository _firmsRepository;
+        private readonly IUnitsRepository _unitsRepository;
         private readonly IConfiguration _configuration;
 
         public ProductsPageModel(IProductsRepository productsRepository,
             IStoresRepository storesRepository,
             IFirmsRepository firmsRepository,
+            IUnitsRepository unitsRepository,
             IConfiguration configuration)
         {
             _productsRepository = productsRepository;
             _storesRepository = storesRepository;
             _firmsRepository = firmsRepository;
+            _unitsRepository = unitsRepository;
             _configuration = configuration;
         }
 
@@ -42,6 +45,7 @@ namespace OpenPOS.Inventory.Pages.ProductPages
         public PaginatedList<ProductDto> Products { get; set; }
         public List<StoreDto> Stores { get; set; }
         public List<Firm> Firms { get; set; }
+        public List<Unit> Units { get; set; }
         public Guid SelectedStore { get; set; }
         public string Message { get; set; }
         
@@ -91,6 +95,7 @@ namespace OpenPOS.Inventory.Pages.ProductPages
             var userId = User.GetUserId();
             Stores = await _storesRepository.GetStoresForUser(userId);
             Firms = await _firmsRepository.GetFirms(store.Id);
+            Units = await _unitsRepository.GetUnits();
         }
     }
 }

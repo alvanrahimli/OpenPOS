@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{8FA998
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{F97BFC2B-F2E9-4427-B1A8-A53ED17CC614}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPOS.Web", "src\Web\OpenPOS.Web\OpenPOS.Web.csproj", "{DA470B43-4A2A-4052-978F-4E64505F5686}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPOS.Inventory", "src\Web\OpenPOS.Inventory\OpenPOS.Inventory.csproj", "{DA470B43-4A2A-4052-978F-4E64505F5686}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenPOS.Identity", "src\Api\OpenPOS.Identity\OpenPOS.Identity.csproj", "{F70AACF4-B5FB-48FF-93F4-132831CB4DE6}"
 EndProject

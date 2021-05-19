@@ -13,7 +13,9 @@ namespace OpenPOS.Domain.Models.Dtos
         public string Sku { get; set; }
         [Required]
         public string Barcode { get; set; }
-        
+        public DateTime CreationDate { get; set; }
+        public DateTime LastModifiedDate { get; set; }
+
         [Required]
         [Range(0, int.MaxValue)]
         public int StockCount { get; set; }
@@ -38,7 +40,9 @@ namespace OpenPOS.Domain.Models.Dtos
         public string[] Tags { get; set; }
         
         public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; }
         public Guid StoreId { get; set; }
         public Guid? FirmId { get; set; }
+        public string FirmName { get; set; }
     }
 }

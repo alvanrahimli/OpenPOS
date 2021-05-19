@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OpenPOS.Domain.Data;
@@ -9,9 +10,10 @@ using OpenPOS.Domain.Data;
 namespace OpenPOS.Domain.Migrations
 {
     [DbContext(typeof(PosContext))]
-    partial class OpenPosContextModelSnapshot : ModelSnapshot
+    [Migration("20210515142351_NowWeUsePosUser")]
+    partial class NowWeUsePosUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -311,9 +313,6 @@ namespace OpenPOS.Domain.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("SelectedStoreId")
-                        .IsUnique();
-
                     b.HasIndex("StoreId");
 
                     b.ToTable("AspNetUsers");
@@ -372,8 +371,8 @@ namespace OpenPOS.Domain.Migrations
                     b.Property<string>("Sku")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("StockCount")
-                        .HasColumnType("numeric");
+                    b.Property<int>("StockCount")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("StoreId")
                         .HasColumnType("uuid");
@@ -415,17 +414,12 @@ namespace OpenPOS.Domain.Migrations
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("TransactionId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("UnitName")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("TransactionId");
 
                     b.ToTable("ProductVariants");
                 });
@@ -452,6 +446,9 @@ namespace OpenPOS.Domain.Migrations
 
                     b.HasIndex("ParentId");
 
+                    b.HasIndex("SelectorUserId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Stores");
@@ -475,8 +472,8 @@ namespace OpenPOS.Domain.Migrations
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("StoreId")
-                        .HasColumnType("uuid");
+                    b.Property<string[]>("Tags")
+                        .HasColumnType("text[]");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp without time zone");
@@ -492,8 +489,6 @@ namespace OpenPOS.Domain.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("FirmId");
-
-                    b.HasIndex("StoreId");
 
                     b.ToTable("Transactions");
                 });
@@ -605,15 +600,9 @@ namespace OpenPOS.Domain.Migrations
 
             modelBuilder.Entity("OpenPOS.Domain.Models.PosUser", b =>
                 {
-                    b.HasOne("OpenPOS.Domain.Models.Store", "SelectedStore")
-                        .WithOne("SelectorUser")
-                        .HasForeignKey("OpenPOS.Domain.Models.PosUser", "SelectedStoreId");
-
                     b.HasOne("OpenPOS.Domain.Models.Store", null)
                         .WithMany("Employees")
                         .HasForeignKey("StoreId");
-
-                    b.Navigation("SelectedStore");
                 });
 
             modelBuilder.Entity("OpenPOS.Domain.Models.Product", b =>
@@ -653,13 +642,7 @@ namespace OpenPOS.Domain.Migrations
                         .WithMany()
                         .HasForeignKey("ProductId");
 
-                    b.HasOne("OpenPOS.Domain.Models.Transaction", "Transaction")
-                        .WithMany("IncludedProducts")
-                        .HasForeignKey("TransactionId");
-
                     b.Navigation("Product");
-
-                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("OpenPOS.Domain.Models.Store", b =>
@@ -668,11 +651,17 @@ namespace OpenPOS.Domain.Migrations
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
 
+                    b.HasOne("OpenPOS.Domain.Models.PosUser", "SelectorUser")
+                        .WithOne("SelectedStore")
+                        .HasForeignKey("OpenPOS.Domain.Models.Store", "SelectorUserId");
+
                     b.HasOne("OpenPOS.Domain.Models.PosUser", "User")
                         .WithMany("Stores")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("SelectorUser");
 
                     b.Navigation("User");
                 });
@@ -687,17 +676,9 @@ namespace OpenPOS.Domain.Migrations
                         .WithMany()
                         .HasForeignKey("FirmId");
 
-                    b.HasOne("OpenPOS.Domain.Models.Store", "Store")
-                        .WithMany("Transactions")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Client");
 
                     b.Navigation("Firm");
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("OpenPOS.Domain.Models.Category", b =>
@@ -712,6 +693,8 @@ namespace OpenPOS.Domain.Migrations
 
             modelBuilder.Entity("OpenPOS.Domain.Models.PosUser", b =>
                 {
+                    b.Navigation("SelectedStore");
+
                     b.Navigation("Stores");
                 });
 
@@ -726,15 +709,6 @@ namespace OpenPOS.Domain.Migrations
                     b.Navigation("Employees");
 
                     b.Navigation("Products");
-
-                    b.Navigation("SelectorUser");
-
-                    b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("OpenPOS.Domain.Models.Transaction", b =>
-                {
-                    b.Navigation("IncludedProducts");
                 });
 #pragma warning restore 612, 618
         }

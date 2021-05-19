@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using OpenPOS.Domain.Enums;
 
-namespace OpenPOS.Domain.Models
+namespace OpenPOS.Domain.Models.Dtos
 {
-    public class Transaction
+    public class TransactionDto
     {
         public Guid Id { get; set; }
         public DateTime Timestamp { get; set; }
@@ -13,15 +12,10 @@ namespace OpenPOS.Domain.Models
         public TransactionType Type { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
 
-        public Guid StoreId { get; set; }
-        public Store Store { get; set; }
-
         public Guid? ClientId { get; set; }
         public Client Client { get; set; }
 
         public Guid? FirmId { get; set; }
         public Firm Firm { get; set; }
-
-        public List<ProductVariant> IncludedProducts { get; set; }
     }
 }

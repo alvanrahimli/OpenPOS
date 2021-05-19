@@ -1,0 +1,283 @@
+@page "/products"
+@model OpenPOS.Inventory.Pages.ProductPages.ProductsPageModel
+
+@{
+	ViewData["title"] = "Məhsullar";
+    Layout = "Shared/_Layout";
+	var counter = 1;
+}
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+	<div class="alert alert-info alert-dismissible" role="alert">
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		<div class="alert-icon">
+			<i class="far fa-fw fa-bell"></i>
+		</div>
+		<div class="alert-message">
+			<strong>@Model.Message</strong>
+		</div>
+	</div>
+}
+
+@* Filter section *@
+<div class="card">
+	<div class="card-body">
+		<form method="get">
+			<div class="row">
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-12">
+							<div class="form-group">
+								<label asp-for="FilterContext.LimitBy">Limitlər</label>
+								<select asp-for="FilterContext.LimitBy" class="form-control">
+									<option value="">Parametr seçin</option>
+									<option value="SalePrice">Satış qiyməti</option>
+									<option value="PurchasePrice">Alış qiyməti</option>
+									<option value="SecondSalePrice">İkinci satış qiyməti</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group">
+								<label asp-for="FilterContext.FromPrice">Minimum qiymət</label>
+								<input type="number" step="any" asp-for="FilterContext.FromPrice" class="form-control">
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group">
+								<label asp-for="FilterContext.ToPrice">Maksimum qiymət</label>
+								<input type="number" step="any" asp-for="FilterContext.ToPrice" class="form-control">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-12">
+							<div class="form-group">
+								<label asp-for="FilterContext.OrderBy">Sırala</label>
+								<span style="float: right">
+									<input type="checkbox" asp-for="FilterContext.IsDescending">
+									<label asp-for="FilterContext.IsDescending">Azalan sıra ilə</label>
+								</span>
+								<select asp-for="FilterContext.OrderBy" class="form-control">
+									<option value="Name">Məhsul adına görə</option>
+									<option value="StockCount">Saya görə</option>
+									<option value="PurchasePrice">Alış qiymətinə görə</option>
+									<option value="SalePrice">Satış qiymətinə görə</option>
+									<option value="SecondSalePrice">İkinci satış qiymətinə görə</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label>Səhifələmə</label><br>
+								@{
+									var possibleIndex = Model.Products.CurrentPage - 3;
+									var startIndex = possibleIndex > 0 ? possibleIndex : 0;
+									
+								}
+								<div>
+									<div class="row">
+										<div class="col-9">
+											<span class="btn-group me-2 mt-2" role="group" aria-label="PaginationGroup">
+												@for (var i = startIndex; i < Model.Products.CurrentPage + 3 && i <= Model.Products.TotalPages; i++)
+												{
+													<input type="submit" class="btn btn-secondary" name="pageNum" value="@(i + 1)">
+												}
+											</span>
+										</div>
+										<div class="col-3">
+											<select asp-for="FilterContext.Limit" class="form-control">
+												<option value="2">2</option>
+												<option value="50">50</option>
+												<option value="100">100</option>
+												<option value="150">150</option>
+												<option value="200">200</option>
+												<option value="500">500</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-5">
+							<div class="form-group">
+								<label asp-for="FilterContext.SearchBy">Axtarış et</label>
+								<select asp-for="FilterContext.SearchBy" class="form-control">
+									<option>Parametr seçin</option>
+									<option value="Barcode">Barkoda görə</option>
+									<option value="Name">Məhsul adına görə</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-7">
+							<div class="form-group">
+								<label asp-for="FilterContext.SearchTerm">Axtarış mətni</label>
+								<input asp-for="FilterContext.SearchTerm" class="form-control">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="filter-submit-button">
+				<button type="submit" class="btn btn-primary">Axtar</button>
+				<button type="submit" class="btn btn-outline-danger disabled" asp-page-handler="ClearFilter">Təmizlə</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+@* Products section *@
+<div class="card flex-fill">
+	<div class="card-header">
+		<h5 class="card-title mb-0">Məhsul siyahısı</h5>
+	</div>
+	<table class="table table-hover my-0">
+		<thead>
+		<tr>
+			<th><strong>#</strong></th>
+			<th>Barkod</th>
+			<th>Məhsulun adı</th>
+			<th>Alış</th>
+			<th>Satış</th>
+			<th>Sayı</th>
+			<th>Kateqoriya</th>
+			<th>Qeydlər</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var product in Model.Products)
+		{
+			<tr>
+				<td><strong>@counter</strong></td>
+				<td>@product.Barcode</td>
+				<td><a href="/products/add?id=@product.Id">@product.Name</a></td>
+				<td>@product.PurchasePrice ₼</td>
+				<td>@product.SalePrice ₼</td>
+				<td>
+					@if (product.StockCount < product.AlertStockCount && product.AlertStockCount > 0)
+					{
+						<span class="badge bg-danger" style="font-size: 100%;">@product.StockCount (@product.Unit.DisplayName)</span>
+					}
+					else
+					{
+						<span>@product.StockCount (@product.Unit.DisplayName)</span>
+					}
+				</td>
+				<td>@product.CategoryName</td>
+				<td style="max-width: 400px">@product.Notes</td>
+				<td>
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Əməliyyatlar
+						</button>
+						<div class="dropdown-menu">
+							<button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#incomeModal"
+							        data-bs-productName="@product.Name" data-bs-productId="@product.Id" data-bs-firmId="@product.FirmId">
+								<span style="color: blue">Mədaxil</span>
+							</button>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="/products/add?id=@product.Id">Redaktə et</a>
+							<a class="dropdown-item" href="#"><span style="color: blue">Sat</span></a>
+						</div>
+					</div>
+				</td>
+			</tr>
+
+			counter++;
+		}
+		</tbody>
+	</table>
+</div>
+
+@section Modals
+{
+	<div class="modal fade" id="incomeModal" tabindex="-1" aria-labelledby="IncomeModelLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Mədaxil qeyd edin</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<form method="post">
+					<input type="hidden" asp-for="IncomeContext.ProductId" id="product-id">
+					<div class="modal-body">
+						<div class="mb-3">
+							<label for="product-name" class="col-form-label">Məhsul</label>
+							<input type="text" class="form-control" id="product-name" readonly>
+						</div>
+						<div class="row mb-3">
+							<div class="col-3">
+								<label for="product-name" class="col-form-label">Ödəniş üsulu</label>
+								<select class="form-control" asp-for="IncomeContext.PaymentMethod">
+									<option value="Cash">Nəğd</option>
+									<option value="Card">Kart</option>
+									<option value="Loan">Nisyə</option>
+								</select>
+							</div>
+							<div class="col-9">
+								<label for="product-count" class="col-form-label">Sayı</label>
+								<input type="number" class="form-control" id="product-count"
+								       asp-for="IncomeContext.Quantity">
+							</div>
+						</div>
+						<div class="mb-3">
+							<label for="product-name" class="col-form-label">Firma</label>
+							<select class="form-control" asp-for="IncomeContext.FirmId" id="firm-id">
+								<option>Yoxdur</option>
+								@foreach (var firm in Model.Firms)
+								{
+									<option value="@firm.Id">@firm.Name</option>
+								}
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="product-name" class="col-form-label">Qeydlər</label>
+							<input type="text" class="form-control" id="notes" asp-for="IncomeContext.Notes">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bağla</button>
+						<button type="submit" class="btn btn-primary" asp-page-handler="ProductIncome">Təsdiq et</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+@section Scripts
+{
+	<script>
+	const incomeModal = document.getElementById('incomeModal')
+    incomeModal.addEventListener('show.bs.modal', function (event) {
+      // Button that triggered the modal
+      let button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      let productId = button.getAttribute('data-bs-productId')
+      let productName = button.getAttribute('data-bs-productName')
+      let firmId = button.getAttribute('data-bs-firmId')
+      // If necessary, you could initiate an AJAX request here
+      // and then do the updating in a callback.
+
+      // Update the modal's content.
+      let modalTitle = incomeModal.querySelector('.modal-title')
+      let productIdInput = incomeModal.querySelector('#product-id')
+      let productNameInput = incomeModal.querySelector('#product-name')
+      let firmIdInput = incomeModal.querySelector('#firm-id')
+	  
+      modalTitle.textContent = 'Mədaxil ' + productName
+      productIdInput.value = productId
+      productNameInput.value = productName
+      firmIdInput.value = firmId
+    })
+	</script>
+}

@@ -5,13 +5,8 @@ using OpenPOS.Domain.Models;
 
 namespace OpenPOS.Domain.Data
 {
-    public class PosContext : IdentityDbContext, IDataProtectionKeyContext
+    public class PosContext : IdentityDbContext<PosUser>, IDataProtectionKeyContext
     {
-        public PosContext(DbContextOptions<PosContext> options) : base(options)
-        {
-            
-        }
-
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Client> Clients { get; set; }
@@ -21,5 +16,25 @@ namespace OpenPOS.Domain.Data
         public DbSet<Unit> Units { get; set; }
         public DbSet<Firm> Firms { get; set; }
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
+        public PosContext(DbContextOptions<PosContext> options) : base(options)
+        {
+            
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<PosUser>()
+                .HasOne(u => u.SelectedStore)
+                .WithOne(s => s.SelectorUser) // Change this for multiple user selectors for next v2
+                .HasForeignKey<PosUser>(u => u.SelectedStoreId);
+
+            builder.Entity<Store>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Stores)
+                .HasForeignKey(store => store.UserId);
+            
+            base.OnModelCreating(builder);
+        }
     }
 }

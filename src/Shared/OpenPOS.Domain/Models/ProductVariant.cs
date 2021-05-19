@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OpenPOS.Domain.Models
 {
@@ -10,8 +12,12 @@ namespace OpenPOS.Domain.Models
         public string UnitName { get; set; }
         public decimal Quantity { get; set; }
         public decimal SalePrice { get; set; }
+        [NotMapped] 
+        public decimal TotalPrice => Quantity * SalePrice;
         
         public Guid? ProductId { get; set; }
         public Product Product { get; set; }
+
+        public Transaction Transaction { get; set; }
     }
 }

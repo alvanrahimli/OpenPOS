@@ -24,7 +24,40 @@ namespace OpenPOS.Infrastructure.Repositories
             _logger = logger;
             _mapper = mapper;
         }
-        
+
+        public async Task<StoreDto> GetSelectedStore(string userId)
+        {
+            var user = await _context.Users
+                .AsNoTracking()
+                .Include(u => u.SelectedStore)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<StoreDto>(user.SelectedStore);
+        }
+
+        public async Task<StoreDto> SelectStore(string userId, Guid storeId)
+        {
+            var store = await _context.Stores.AsNoTracking().FirstOrDefaultAsync(s => s.Id == storeId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (store == null || user == null)
+            {
+                return null;
+            }
+
+            if (store.UserId == user.Id)
+            {
+                user.SelectedStoreId = store.Id;
+                store.SelectorUserId = user.Id;
+            }
+
+            await _context.SaveChangesAsync();
+            return _mapper.Map<StoreDto>(store);
+        }
+
         public async Task<List<StoreDto>> GetStoresForUser(string userId)
         {
             var stores = await _context.Stores.AsNoTracking().Where(s => s.UserId == userId).ToListAsync();
@@ -33,7 +66,10 @@ namespace OpenPOS.Infrastructure.Repositories
 
         public async Task<StoreDto> GetStore(Guid storeId)
         {
-            throw new NotImplementedException();
+            var store = await _context.Stores
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == storeId);
+            return _mapper.Map<StoreDto>(store);
         }
 
         public async Task<StoreDto> CreateStore(StoreDto input)

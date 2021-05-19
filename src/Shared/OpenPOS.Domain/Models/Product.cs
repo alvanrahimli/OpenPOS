@@ -12,9 +12,12 @@ namespace OpenPOS.Domain.Models
         public string Sku { get; set; }
         [Required]
         public string Barcode { get; set; }
+
+        public DateTime CreationDate { get; set; }
+        public DateTime LastModifiedDate { get; set; }
         
         [Range(0, int.MaxValue)]
-        public int StockCount { get; set; }
+        public decimal StockCount { get; set; }
         [Range(0, int.MaxValue)]
         public int AlertStockCount { get; set; }
 
@@ -22,18 +25,18 @@ namespace OpenPOS.Domain.Models
         public Unit Unit { get; set; }
         
         [Range(0, int.MaxValue)]
+        public decimal PurchasePrice { get; set; }
+        [Range(0, int.MaxValue)]
         public decimal SalePrice { get; set; }
         [Range(0, int.MaxValue)]
         public decimal SecondSalePrice { get; set; }
-        [Range(0, int.MaxValue)]
-        public decimal PurchasePrice { get; set; }
         [Range(0, 100)]
         public decimal ProfitRate { get; set; }
         [Range(0, 100)]
+        public decimal SecondProfitRate { get; set; }
+        [Range(0, 100)]
         public decimal Vat { get; set; }
-        
         public string Notes { get; set; }
-        public string[] Tags { get; set; }
         
         public Guid? CategoryId { get; set; }
         public Category Category { get; set; }

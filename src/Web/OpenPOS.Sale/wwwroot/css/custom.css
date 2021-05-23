@@ -1,0 +1,57 @@
+.barcode-input {
+    width: 100%;
+    font-size: x-large;
+    border: 1px solid midnightblue;
+    border-radius: 0;
+    padding: 7px 15px; 
+    max-width: 700px
+}
+
+#product-form input {
+    width: 100%;
+    font-size: x-large;
+    border: 1px solid cadetblue;
+    border-radius: 3px;
+    padding: 3px 5px;
+}
+
+#product-form select {
+    width: 100%;
+    font-size: x-large;
+    border: 1px solid cadetblue;
+    border-radius: 3px;
+    padding: 3px 5px;
+}
+
+#barcode-div button {
+    font-size: x-large;
+    margin-left: 20px;
+}
+
+#product-form .row {
+    /*margin-bottom: 20px;*/
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    margin-top: 8px;
+}
+
+label {
+    font-weight: bold;
+}
+
+.filter-submit-button {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+.filter-clear-button {
+    position: absolute;
+    right: 80px;
+    bottom: 20px;
+}

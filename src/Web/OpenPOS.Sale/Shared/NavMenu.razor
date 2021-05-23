@@ -1,0 +1,58 @@
+﻿<nav id="sidebar" class="sidebar">
+    <div class="sidebar-content js-simplebar">
+        <a class="sidebar-brand" asp-page="Index">
+            <span class="align-middle">OpenPOS</span>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-header">
+                Səhifələr
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/">
+                    <i class="align-middle" data-feather="sliders"></i> 
+                    <span class="align-middle">Ana səhifə</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <NavLink class="sidebar-link" href="/sale">
+                    <i class="align-middle" data-feather="user"></i>
+                    <span class="align-middle">Satış et</span>
+                </NavLink>
+            </li>
+
+            <li class="sidebar-item">
+                <a href="#products" data-bs-toggle="collapse" class="sidebar-link">
+                    <i class="align-middle" data-feather="users"></i> <span class="align-middle">Məhsullar</span>
+                </a>
+                <ul id="products" class="sidebar-dropdown list-unstyled" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/products">Məhsullar</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/products/add">Məhsul əlavə et</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/categories">Kateqoriyalar</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="sidebar-cta">
+            <div class="sidebar-cta-content">
+                <strong class="d-inline-block mb-2">Upgrade to Pro</strong>
+                <div class="mb-3 text-sm">
+                    Are you looking for more components? Check out our premium version.
+                </div>
+                <div class="d-grid">
+                    <a href="https://adminkit.io/pricing" target="_blank" class="btn btn-primary">
+                        Upgrade toPro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -226,11 +226,11 @@
 							</div>
 							<div class="col-7">
 								<label for="product-count" class="col-form-label">Sayı</label>
-								<input type="number" class="form-control" id="product-count"
+								<input type="number" class="form-control" id="product-count" step="0.001"
 								       asp-for="IncomeContext.Quantity" min="0">
 							</div>
 							<div class="col-2">
-								<label for="product-count" class="col-form-label">Sayı</label>
+								<label for="product-count" class="col-form-label">Vahidi</label>
 								<select class="form-control disabled" id="unit-id" readonly="true" disabled>
 									@foreach (var unit in Model.Units)
 									{

@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Shared\OpenPOS.Domain.Old\OpenPOS.Domain.Old.csproj" />
       <ProjectReference Include="..\..\Shared\OpenPOS.Domain\OpenPOS.Domain.csproj" />
     </ItemGroup>
 

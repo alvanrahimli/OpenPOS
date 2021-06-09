@@ -55,3 +55,74 @@ label {
     right: 80px;
     bottom: 20px;
 }
+
+.alert {
+    padding: 15px;
+}
+
+.cart-total-price {
+    padding: 5px 7px;
+    font-size: larger;
+    color: red;
+}
+
+/* ------------------------------ */
+.sale-barcode-input {
+    padding: 8px 13px;
+    margin: 5px 20px 20px 20px;
+    font-size: xx-large;
+    max-width: 600px;
+}
+
+.price-income {
+    padding: 8px 13px;
+    margin: 5px 20px 20px 20px;
+    font-size: xx-large;
+    max-width: 170px;
+    color: blue;
+}
+
+.price-current {
+    padding: 8px 13px;
+    margin: 5px 20px 20px 20px;
+    font-size: xx-large;
+    max-width: 170px;
+    color: red;
+}
+
+.price-after {
+    padding: 8px 13px;
+    margin: 5px 20px 20px 20px;
+    font-size: xx-large;
+    max-width: 170px;
+    color: green;
+}
+
+.price-label {
+    margin: 10px 0 0 20px;
+    font-weight: bold;
+}
+
+.select-customer {
+    margin: 5px 20px 20px 20px;
+    font-size: x-large;
+}
+
+.sale-notes {
+    margin: 5px 20px 20px 20px;
+    font-size: large;
+    padding: 5px 10px;
+}
+
+.income-money {
+    margin: 5px 20px 20px 20px;
+    font-size: large;
+}
+
+.btn-lg {
+    padding: 20px;
+}
+
+.income-money button {
+    font-size: larger;
+}

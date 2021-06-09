@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\OpenPOS.Domain\OpenPOS.Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\OpenPOS.Infrastructure\OpenPOS.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

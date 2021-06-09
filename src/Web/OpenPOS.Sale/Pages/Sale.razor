@@ -1,10 +1,135 @@
 @page "/sale"
-@inject AuthenticationStateProvider _authenticationStateProvider
+@using System.Globalization
+@using OpenPOS.Domain.Enums
 
-<h3>Sale</h3>
+<h3>Satış</h3>
 
-@code {
-
-    
-
+@if (_errorMessage != null)
+{
+	<div class="alert alert-warning" role="alert">
+		@* <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> *@
+		<div class="alert-warning">
+			<strong>@_errorMessage</strong>
+		</div>
+	</div>
 }
+
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="row">
+				<div class="col-7">
+					<span>
+						<label for="" class="price-label">Barkod</label><br>
+						<input type="text" value="@_barcode" @oninput="@OnBarcodeInputAsync" 
+						       placeholder="Məhsul Barkodunu Oxudun... [ENTER]" class="barcode-input">
+					</span>
+				</div>
+				<div class="col-5 d-flex justify-content-end">
+					<span>
+						<label for="" class="price-label">Ödənən</label>
+						<input type="number" step="0.01" @bind="_incomeMoney"
+						       class="price-income hidden-controls">
+					</span>
+					<span>
+						<label for="" class="price-label">Tutar</label>
+						<input type="number" step="0.01" value="@CartTotalPrice"
+						       class="price-current hidden-controls">
+					</span>
+					<span>
+						<label for="" class="price-label">Qalıq</label>
+						<input type="number" step="0.01" value="@(_incomeMoney - CartTotalPrice)"
+						       class="price-after hidden-controls">
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-7">
+		<div class="card">
+			<table class="table table-hover">
+				<thead>
+				<tr>
+					<th><span style="color: red">Sil</span></th>
+					<th>#</th>
+					<th>Məhsul</th>
+					<th>Miqdar</th>
+					<th>Qiymət</th>
+					<th>Cəmi</th>
+				</tr>
+				</thead>
+				<tbody>
+				@{
+                	var counter = 1;
+                	for (var i = 0; i < NewTransaction.IncludedProducts.Count; i++)
+                	{
+                		var product = NewTransaction.IncludedProducts[i];
+                		var iCopy = i;
+                		<tr>
+                			<td>
+                				<button class="btn btn-outline-danger" @onclick="@(() => NewTransaction.IncludedProducts.RemoveAt(iCopy))">X</button>
+                			</td>
+                			<td>@counter</td>
+                			<td>@product.ProductName</td>
+                			<td>
+                				<div class="btn-group" role="group" aria-label="Product quantity controls">
+                					<button type="button" class="btn btn-secondary"
+                					        @onclick="@(() => NewTransaction.IncludedProducts[iCopy].Quantity--)">-</button>
+                					<input type="number" step="0.001" @bind="NewTransaction.IncludedProducts[iCopy].Quantity"
+                					       @bind:event="oninput" style="max-width: 100px;">
+                					<button type="button" class="btn btn-secondary"
+                					        @onclick="@(() => NewTransaction.IncludedProducts[iCopy].Quantity++)">+</button>
+                				</div>
+                				@product.UnitName
+                			</td>
+                			<td>
+                				<input type="number" step="0.01" style="max-width: 100px" 
+                				       @bind="NewTransaction.IncludedProducts[iCopy].Price" @bind:event="oninput">
+                			</td>
+                			<td>@product.TotalPrice</td>
+                		</tr>
+                		
+                		counter++;
+                	}
+				}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="col-5">
+		<div class="card">
+			<label class="price-label">Məbləğ</label>
+			<span class="btn-group income-money" role="group" aria-label="Basic example">
+				<button type="button" class="btn btn-primary" @onclick="@(() => NewTransaction.PayedAmount = 5)">5</button>
+				<button type="button" class="btn btn-outline-primary" @onclick="@(() => NewTransaction.PayedAmount = 10)">10</button>
+				<button type="button" class="btn btn-primary" @onclick="@(() => NewTransaction.PayedAmount = 20)">20</button>
+				<button type="button" class="btn btn-outline-primary" @onclick="@(() => NewTransaction.PayedAmount = 50)">50</button>
+				<button type="button" class="btn btn-primary" @onclick="@(() => NewTransaction.PayedAmount = 100)">100</button>
+				<button type="button" class="btn btn-outline-primary" @onclick="@(() => NewTransaction.PayedAmount -= 5)">-5</button>
+				<button type="button" class="btn btn-primary" @onclick="@(() => NewTransaction.PayedAmount += 5)">+5</button>
+			</span>
+			<label class="price-label">Üsul</label>
+			<span class="btn-group income-money" role="group" aria-label="Basic example">
+				<button type="button" class="btn btn-lg btn-primary" @onclick="@(() => NewTransaction.PaymentMethod = PaymentMethod.Cash)">Nəğd</button>
+				<button type="button" class="btn btn-lg btn-outline-primary"
+				        @onclick="@(() => NewTransaction.PaymentMethod = PaymentMethod.Card)">Kartla</button>
+				<button type="button" class="btn btn-lg btn-primary" @onclick="@(() => NewTransaction.PaymentMethod = PaymentMethod.Loan)">Nisyə</button>
+			</span>
+
+			<label class="price-label">Müştəri</label>
+			<input class="select-customer" list="customers" placeholder="Müştəri axtarın"  @bind="NewTransaction.ClientName">
+			<datalist id="customers">
+				@if (_customers != null)
+				{
+					@foreach (var customer in _customers)
+					{
+						<option>@customer</option>
+					}
+				}
+			</datalist>
+
+			<textarea cols="30" rows="3" placeholder="Satış üçün qeydlər yazın"
+                                    class="sale-notes"></textarea>
+		</div>
+	</div>
+</div>

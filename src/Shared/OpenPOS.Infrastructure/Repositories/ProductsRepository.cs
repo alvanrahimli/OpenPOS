@@ -20,8 +20,8 @@ namespace OpenPOS.Infrastructure.Repositories
     {
         private readonly PosContext _context;
         private readonly ITransactionsRepository _transactionsRepository;
-        private readonly IMapper _mapper;
         private readonly ILogger<ProductsRepository> _logger;
+        private readonly IMapper _mapper;
 
         public ProductsRepository(PosContext context,
             ITransactionsRepository transactionsRepository,
@@ -210,7 +210,7 @@ namespace OpenPOS.Infrastructure.Repositories
                 Type = TransactionType.Income,
                 Notes = incomeContext.Notes,
                 PaymentMethod = selectedMethod,
-                IncludedProductVariantContexts = new List<ProductVariantContext>()
+                IncludedProducts = new List<ProductVariantContext>()
                 {
                     new()
                     {

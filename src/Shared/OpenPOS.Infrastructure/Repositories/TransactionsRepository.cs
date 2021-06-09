@@ -41,7 +41,7 @@ namespace OpenPOS.Infrastructure.Repositories
             
             // Load sold products and create product variants
             var unfoundProducts = new List<Guid>();
-            foreach (var soldProduct in transactionContext.IncludedProductVariantContexts)
+            foreach (var soldProduct in transactionContext.IncludedProducts)
             {
                 var product = await _context.Products
                     .Include(p => p.Unit)

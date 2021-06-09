@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OpenPOS.Domain.Data;
@@ -9,9 +10,10 @@ using OpenPOS.Domain.Data;
 namespace OpenPOS.Domain.Migrations
 {
     [DbContext(typeof(PosContext))]
-    partial class OpenPosContextModelSnapshot : ModelSnapshot
+    [Migration("20210530084346_RemoveTags")]
+    partial class RemoveTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.EquivalencyExpression;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.DataProtection;
@@ -15,7 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenPOS.Domain.Data;
 using OpenPOS.Domain.Models;
-using OpenPOS.Sale.Data;
+using OpenPOS.Infrastructure.Interfaces;
+using OpenPOS.Infrastructure.Repositories;
 
 namespace OpenPOS.Sale
 {
@@ -52,23 +54,40 @@ namespace OpenPOS.Sale
             services.AddAntiforgery(opts => {
                 opts.Cookie.SameSite = SameSiteMode.Lax;
             });
-            services.AddDbContext<PosContext>(builder =>
+            
+            services.AddAutoMapper((_, automapper) =>
             {
-                builder.UseNpgsql(Configuration.GetConnectionString("Default"));
-            });
+                automapper.EnableNullPropagationForQueryMapping = true;
+                automapper.AllowNullCollections = true;
+                automapper.AddCollectionMappers();
+                automapper.AddProfile<AutoMapperProfile>();
+            }, typeof(AutoMapperProfile).Assembly);
 
             services.AddDbContextFactory<PosContext>(builder =>
             {
                 builder.UseNpgsql(Configuration.GetConnectionString("Default"));
             });
+            
+            // services.AddScoped(p => p.GetRequiredService<IDbContextFactory<PosContext>>()
+            //     .CreateDbContext());
+            services.AddDbContext<PosContext>(builder =>
+            {
+                builder.UseNpgsql(Configuration.GetConnectionString("Default"));
+            });
 
-            services.AddIdentity<PosUser, IdentityRole>(options =>
-                {
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                })
+            services.AddIdentity<PosUser, IdentityRole>()
                 .AddEntityFrameworkStores<PosContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddDistributedMemoryCache();
+
+            services.AddScoped<ITransactionsRepository, TransactionsRepository>();
+            services.AddScoped<IStoresRepository, StoresRepository>();
+            services.AddScoped<IProductsRepository, ProductsRepository>();
+            services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+            services.AddScoped<IUnitsRepository, UnitsRepository>();
+            services.AddScoped<IFirmsRepository, FirmsRepository>();
+            services.AddScoped<IClientsRepository, ClientsRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

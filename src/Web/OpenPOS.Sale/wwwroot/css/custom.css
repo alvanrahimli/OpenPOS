@@ -1,10 +1,12 @@
+
 .barcode-input {
     width: 100%;
     font-size: x-large;
     border: 1px solid midnightblue;
     border-radius: 0;
     padding: 7px 15px; 
-    max-width: 700px
+    max-width: 700px;
+    margin: 17px 20px;
 }
 
 #product-form input {
@@ -125,4 +127,26 @@ label {
 
 .income-money button {
     font-size: larger;
+}
+
+.payment-radio {
+    margin: 5px;
+    padding: 20px 30px;
+    border-radius: .3rem;
+    border: 1px solid #5891e2;
+    cursor: pointer;
+    width: 100%;
+    font-size: x-large;
+    text-align: center;
+}
+
+.payment-radio-input {
+    width: 20px;
+    height: 20px;
+}
+
+.sale-button {
+    width: 100%;
+    height: 100px;
+    font-size: xx-large;
 }

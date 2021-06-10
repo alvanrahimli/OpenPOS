@@ -45,7 +45,6 @@ namespace OpenPOS.Infrastructure.Repositories
             {
                 var product = await _context.Products
                     .Include(p => p.Unit)
-                    .AsNoTracking()
                     .FirstOrDefaultAsync(p => p.Id == soldProduct.ProductId);
                 if (product == null)
                 {

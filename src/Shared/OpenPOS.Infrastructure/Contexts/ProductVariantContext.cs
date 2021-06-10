@@ -12,8 +12,8 @@ namespace OpenPOS.Infrastructure.Contexts
         public string ProductName { get; set; }
         public string UnitName { get; set; }
         [Range(0, int.MaxValue)]
-        public decimal Price { get; set; }
+        public decimal SalePrice { get; set; }
 
-        public decimal TotalPrice => Price * Quantity;
+        public decimal TotalPrice => SalePrice * Quantity;
     }
 }

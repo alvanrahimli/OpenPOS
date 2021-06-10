@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenPOS.Domain.Enums;
 
 namespace OpenPOS.Infrastructure.Contexts
@@ -11,10 +12,11 @@ namespace OpenPOS.Infrastructure.Contexts
         public string Notes { get; set; }
 
         public decimal PayedAmount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public decimal ReturnAmount { get; set; }
+        public decimal TotalAmount => IncludedProducts.Sum(p => p.TotalPrice);
+        public decimal ReturnAmount => PayedAmount - TotalAmount;
 
         public string ClientName { get; set; }
+        public string ClientNotes { get; set; }
         public Guid? FirmId { get; set; }
 
         public List<ProductVariantContext> IncludedProducts { get; set; }

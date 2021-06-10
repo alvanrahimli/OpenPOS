@@ -1,15 +1,11 @@
 @page "/sale"
-@using System.Globalization
 @using OpenPOS.Domain.Enums
 
-<h3>Satış</h3>
-
-@if (_errorMessage != null)
+@if (_uiMessage != null)
 {
 	<div class="alert alert-warning" role="alert">
-		@* <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> *@
 		<div class="alert-warning">
-			<strong>@_errorMessage</strong>
+			<strong>@_uiMessage</strong>
 		</div>
 	</div>
 }
@@ -27,19 +23,19 @@
 				</div>
 				<div class="col-5 d-flex justify-content-end">
 					<span>
-						<label for="" class="price-label">Ödənən</label>
-						<input type="number" step="0.01" @bind="_incomeMoney"
-						       class="price-income hidden-controls">
+						<label for="payed_amount" class="price-label">Ödənən</label>
+						<input type="number" step="0.01" @bind="NewTransaction.PayedAmount" @bind:event="oninput"
+						       class="price-income hidden-controls" id="payed_amount">
 					</span>
 					<span>
-						<label for="" class="price-label">Tutar</label>
-						<input type="number" step="0.01" value="@CartTotalPrice"
-						       class="price-current hidden-controls">
+						<label for="total_amount" class="price-label">Tutar</label>
+						<input type="number" step="0.01" value="@NewTransaction.TotalAmount"
+						       class="price-current hidden-controls" id="total_amount">
 					</span>
 					<span>
-						<label for="" class="price-label">Qalıq</label>
-						<input type="number" step="0.01" value="@(_incomeMoney - CartTotalPrice)"
-						       class="price-after hidden-controls">
+						<label for="return_amount" class="price-label">Qalıq</label>
+						<input type="number" step="0.01" value="@(NewTransaction.ReturnAmount)"
+						       class="price-after hidden-controls" id="return_amount">
 					</span>
 				</div>
 			</div>
@@ -84,7 +80,7 @@
                 			</td>
                 			<td>
                 				<input type="number" step="0.01" style="max-width: 100px" 
-                				       @bind="NewTransaction.IncludedProducts[iCopy].Price" @bind:event="oninput">
+                				       @bind="NewTransaction.IncludedProducts[iCopy].SalePrice" @bind:event="oninput">
                 			</td>
                 			<td>@product.TotalPrice</td>
                 		</tr>
@@ -108,28 +104,50 @@
 				<button type="button" class="btn btn-outline-primary" @onclick="@(() => NewTransaction.PayedAmount -= 5)">-5</button>
 				<button type="button" class="btn btn-primary" @onclick="@(() => NewTransaction.PayedAmount += 5)">+5</button>
 			</span>
-			<label class="price-label">Üsul</label>
-			<span class="btn-group income-money" role="group" aria-label="Basic example">
-				<button type="button" class="btn btn-lg btn-primary" @onclick="@(() => NewTransaction.PaymentMethod = PaymentMethod.Cash)">Nəğd</button>
-				<button type="button" class="btn btn-lg btn-outline-primary"
-				        @onclick="@(() => NewTransaction.PaymentMethod = PaymentMethod.Card)">Kartla</button>
-				<button type="button" class="btn btn-lg btn-primary" @onclick="@(() => NewTransaction.PaymentMethod = PaymentMethod.Loan)">Nisyə</button>
-			</span>
-
+			
 			<label class="price-label">Müştəri</label>
-			<input class="select-customer" list="customers" placeholder="Müştəri axtarın"  @bind="NewTransaction.ClientName">
-			<datalist id="customers">
-				@if (_customers != null)
-				{
-					@foreach (var customer in _customers)
-					{
-						<option>@customer</option>
-					}
-				}
-			</datalist>
+            <input class="select-customer" list="customers" placeholder="Müştəri axtarın" @bind="NewTransaction.ClientName">
+            <datalist id="customers">
+            	@if (_customers != null)
+            	{
+            		@foreach (var customer in _customers)
+            		{
+            			<option>@customer</option>
+            		}
+            	}
+            </datalist>
 
-			<textarea cols="30" rows="3" placeholder="Satış üçün qeydlər yazın"
-                                    class="sale-notes"></textarea>
+            <textarea cols="30" rows="3" placeholder="Satış üçün qeydlər yazın" @bind="NewTransaction.Notes"
+            	class="sale-notes"></textarea>
+
+			<label class="price-label">Ödəniş metodu</label>
+            <div class="row" style="margin: 5px 20px 20px 20px;">
+	            <div class="col-4">
+		            <label class="payment-radio" for="cash_radio">
+			            <input type="radio" id="cash_radio" value="Cash" name="payment_method" class="payment-radio-input"
+			                   checked="checked" @onchange="@(() => NewTransaction.PaymentMethod = PaymentMethod.Cash)">
+			            <br>
+			            Nəğd
+		            </label>
+	            </div>
+	            <div class="col-4">
+		            <label class="payment-radio" for="card_radio">
+			            <input type="radio" id="card_radio" value="Card" name="payment_method" class="payment-radio-input"
+			                   @onchange="@(() => NewTransaction.PaymentMethod = PaymentMethod.Card)">
+			            <br>
+			            Kartla
+		            </label>
+	            </div>
+	            <div class="col-4">
+		            <label class="payment-radio" for="loan_radio">
+			            <input type="radio" id="loan_radio" value="Loan" name="payment_method" class="payment-radio-input"
+			                   @onchange="@(() => NewTransaction.PaymentMethod = PaymentMethod.Loan)">
+			            <br>
+			            Nisyə
+		            </label>
+	            </div>
+            </div>
+            <button class="btn btn-primary sale-button" @onclick="SubmitTransaction">TƏSTİQLƏ</button>
 		</div>
 	</div>
 </div>

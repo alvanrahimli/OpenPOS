@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -20,20 +23,18 @@ namespace OpenPOS.Sale.Pages
     public partial class Sale
     {
         private string _barcode;
-        private string _errorMessage;
-        private decimal CartTotalPrice => NewTransaction.IncludedProducts.Sum(p => p.TotalPrice);
-        private decimal _incomeMoney;
-        public CreateTransactionContext NewTransaction { get; set; }
+        private string _uiMessage;
+        private CreateTransactionContext NewTransaction { get; set; }
         private List<string> _customers;
         
         [Inject] public IDbContextFactory<PosContext> DbContextFactory { get; set; }
         [Inject] public IStoresRepository StoresRepository { get; set; }
-        [Inject] public IClientsRepository ClientsRepository { get; set; }
         [Inject] public IHttpContextAccessor HttpContextAccessor { get; set; }
         [Inject] public ILogger<Sale> Logger { get; set; }
         [Inject] public IDistributedCache Cache { get; set; }
+        [Inject] public IMapper Mapper { get; set; }
 
-        public bool IsBusy { get; set; }
+        private bool IsBusy { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -55,7 +56,7 @@ namespace OpenPOS.Sale.Pages
         {
             if (IsBusy)
             {
-                _errorMessage = "Yenidən cəhd edin";
+                _uiMessage = "Yenidən cəhd edin";
                 return;
             }
             
@@ -87,13 +88,13 @@ namespace OpenPOS.Sale.Pages
 
                 if (selectedProduct == null)
                 {
-                    _errorMessage = $"Məhsul '{_barcode}' tapılmadı.";
+                    _uiMessage = $"Məhsul '{_barcode}' tapılmadı.";
                     return;
                 }
-
+                
                 if (selectedProduct.StockCount == 0)
                 {
-                    _errorMessage = $"{selectedProduct.Name} stokda yoxdur";
+                    _uiMessage = $"{selectedProduct.Name} stokda yoxdur";
                 }
 
                 var existingProductInCart = NewTransaction.IncludedProducts
@@ -104,7 +105,7 @@ namespace OpenPOS.Sale.Pages
                     {
                         ProductId = selectedProduct.Id,
                         Quantity = 1,
-                        Price = selectedProduct.SalePrice,
+                        SalePrice = selectedProduct.SalePrice,
                         ProductName = selectedProduct.Name,
                         UnitName = selectedProduct.Unit.DisplayName
                     });
@@ -115,6 +116,116 @@ namespace OpenPOS.Sale.Pages
                 }
 
                 _barcode = string.Empty;
+            }
+        }
+
+        private async Task SubmitTransaction()
+        {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+
+                await using var context = DbContextFactory.CreateDbContext();
+                var userId = HttpContextAccessor.HttpContext?.User.GetUserId();
+                var storeId = await Cache.GetSelectedStore(context, userId);
+
+                var transaction = new Transaction
+                {
+                    Timestamp = DateTime.UtcNow,
+                    Type = TransactionType.Sale,
+                    PaymentMethod = NewTransaction.PaymentMethod,
+                    StoreId = storeId,
+                    TotalPrice = NewTransaction.TotalAmount,
+                    PayedAmount = NewTransaction.PayedAmount,
+                    ReturnAmount = NewTransaction.ReturnAmount,
+                    IncludedProducts = new List<ProductVariant>(),
+                    Notes = NewTransaction.Notes
+                };
+                
+                var unfoundProducts = new List<Guid>();
+                foreach (var soldProduct in NewTransaction.IncludedProducts)
+                {
+                    var product = await context.Products
+                        .Include(p => p.Unit)
+                        .FirstOrDefaultAsync(p => p.Id == soldProduct.ProductId);
+                    if (product == null)
+                    {
+                        unfoundProducts.Add(soldProduct.ProductId);
+                        continue;
+                    }
+
+                    // Change product stock count according transaction type
+                    switch (transaction.Type)
+                    {
+                        case TransactionType.Sale:
+                            product.StockCount -= soldProduct.Quantity;
+                            break;
+                        case TransactionType.Return:
+                            product.StockCount += soldProduct.Quantity;
+                            break;
+                        case TransactionType.Income:
+                            product.StockCount += soldProduct.Quantity;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(transaction.Type));
+                    }
+                    product.LastModifiedDate = DateTime.UtcNow;
+                
+                    var productVariant = new ProductVariant
+                    {
+                        Quantity = soldProduct.Quantity,
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        UnitName = product.Unit.DisplayName,
+                        SalePrice = product.SalePrice
+                    };
+                    transaction.IncludedProducts.Add(productVariant);
+                }
+
+                if (!string.IsNullOrEmpty(NewTransaction.ClientName))
+                {
+                    var client = await context.Clients.FirstOrDefaultAsync(c => c.Name == NewTransaction.ClientName
+                        && c.StoreId == storeId);
+                    if (client == null)
+                    {
+                        var newClient = new Client
+                        {
+                            Name = NewTransaction.ClientName,
+                            StoreId = storeId,
+                            Notes = NewTransaction.ClientNotes
+                        };
+                        await context.Clients.AddAsync(newClient);
+                        await context.SaveChangesAsync();
+                        transaction.ClientId = newClient.Id;
+                    }
+                    else
+                    {
+                        transaction.ClientId = client.Id;
+                    }
+                }
+
+                await context.Transactions.AddAsync(transaction);
+                var dbRes = await context.SaveChangesAsync();
+                if (dbRes <= 0)
+                {
+                    _uiMessage = "Satış həyata keçmədi";
+                }
+
+                _uiMessage = "Satış həyata keçirildi";
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("Error occured: {Error}", e.Message);
+                _uiMessage = "Yenidən cəhd edin";
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
     }

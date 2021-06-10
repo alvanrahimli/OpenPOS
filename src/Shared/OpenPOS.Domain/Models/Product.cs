@@ -16,7 +16,6 @@ namespace OpenPOS.Domain.Models
         public DateTime CreationDate { get; set; }
         public DateTime LastModifiedDate { get; set; }
         
-        [Range(0, int.MaxValue)]
         public decimal StockCount { get; set; }
         [Range(0, int.MaxValue)]
         public int AlertStockCount { get; set; }

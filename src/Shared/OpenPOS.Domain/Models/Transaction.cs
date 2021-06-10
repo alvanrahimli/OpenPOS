@@ -9,7 +9,11 @@ namespace OpenPOS.Domain.Models
         public Guid Id { get; set; }
         public DateTime Timestamp { get; set; }
         public string Notes { get; set; }
+        
         public decimal TotalPrice { get; set; }
+        public decimal PayedAmount { get; set; }
+        public decimal ReturnAmount { get; set; }
+        
         public TransactionType Type { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
 

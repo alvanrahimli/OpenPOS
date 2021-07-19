@@ -23,9 +23,9 @@ namespace OpenPOS.Inventory.Pages.Categories
             _categoriesRepository = categoriesRepository;
         }
         
-        public async void OnGetAsync()
+        public async Task OnGetAsync()
         {
-            Categories = await _categoriesRepository.GetCategories(User.GetUserId());
+            await InitializePage();
         }
 
         public async Task<ActionResult> OnPostCreateAsync()
@@ -33,17 +33,16 @@ namespace OpenPOS.Inventory.Pages.Categories
             var addedCategory = await _categoriesRepository.AddCategory(User.GetUserId(), NewCategory);
             if (addedCategory == null)
             {
-                // await InitializePage();
                 Message = "Səhv baş verdi";
-                return Page();
             }
 
-            // await InitializePage();
+            await InitializePage();
             return Page();
         }
 
-        // private async Task InitializePage()
-        // {
-        // }
+        private async Task InitializePage()
+        {
+            Categories = await _categoriesRepository.GetCategories(User.GetUserId());
+        }
     }
 }

@@ -21,10 +21,10 @@
 		<tr>
 			<form method="post">
 				<td>
-					<input asp-for="NewCategory.Name" class="input" placeholder="Kateqoriya adı"/>
+					<input asp-for="NewCategory.Name" style="width: 70%; font-size: larger;" class="input" placeholder="Kateqoriya adı"/>
 				</td>
 				<td>
-					<button type="submit" class="btn btn-primary">Əlavə et</button>
+					<button type="submit" class="btn btn-primary" asp-page-handler="Create">Əlavə et</button>
 				</td>
 			</form>
 		</tr>

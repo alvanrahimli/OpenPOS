@@ -24,6 +24,8 @@ namespace OpenPOS.Inventory
                 .ForMember(b => b.Timestamp, x => x.MapFrom(a => DateTime.UtcNow))
                 .ForMember(b => b.IncludedProducts, x => x.Ignore());
             CreateMap<Transaction, TransactionDto>();
+            CreateMap<Category, CategoryDto>();
+            CreateMap<AddCategoryDto, Category>();
         }
     }
 }

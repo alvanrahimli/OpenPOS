@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenPOS.Domain.Data;
@@ -20,16 +21,19 @@ namespace OpenPOS.Infrastructure.Repositories
     {
         private readonly PosContext _context;
         private readonly ITransactionsRepository _transactionsRepository;
+        private readonly UserManager<PosUser> _userManager;
         private readonly ILogger<ProductsRepository> _logger;
         private readonly IMapper _mapper;
 
         public ProductsRepository(PosContext context,
             ITransactionsRepository transactionsRepository,
+            UserManager<PosUser> userManager,
             ILogger<ProductsRepository> logger,
             IMapper mapper)
         {
             _context = context;
             _transactionsRepository = transactionsRepository;
+            _userManager = userManager;
             _logger = logger;
             _mapper = mapper;
         }
@@ -37,6 +41,8 @@ namespace OpenPOS.Infrastructure.Repositories
         public async Task<PaginatedList<ProductDto>> GetProducts(Guid storeId, ProductFilterContext filterContext,
             int offset, int limit)
         {
+            var user = await _userManager.FindByEmailAsync("alvanuser@gmail.com");
+            
             var productsQuery = _context.Products
                 .AsNoTracking()
                 .Include(p => p.Category)
@@ -196,8 +202,6 @@ namespace OpenPOS.Infrastructure.Repositories
             {
                 return null;
             }
-
-            product.StockCount += incomeContext.Quantity;
 
             var isParsed = Enum.TryParse(incomeContext.PaymentMethod, true, out PaymentMethod selectedMethod);
             if (!isParsed)

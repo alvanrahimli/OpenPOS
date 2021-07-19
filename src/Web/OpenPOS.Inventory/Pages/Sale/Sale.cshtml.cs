@@ -14,13 +14,13 @@ namespace OpenPOS.Inventory.Pages.Sale
         {
             _contextAccessor = contextAccessor;
         }
-        
-        public async Task OnGet()
+
+        public void OnGet()
         {
-            await InitializePage();
+            InitializePage();
         }
 
-        private async Task InitializePage()
+        private void InitializePage()
         {
             SelectedStoreId = GetStoreId();
         }

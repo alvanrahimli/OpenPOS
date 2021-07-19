@@ -52,7 +52,7 @@ namespace OpenPOS.Inventory.Pages.ProductPages
         /// <summary>
         /// Categories retrieved from db
         /// </summary>
-        public List<Category> Categories { get; set; }
+        public List<CategoryDto> Categories { get; set; }
         /// <summary>
         /// Units retrieved from db
         /// </summary>
@@ -99,6 +99,15 @@ namespace OpenPOS.Inventory.Pages.ProductPages
                     IsExistingProduct = true;
                 }
             }
+            else
+            {
+                // Always generate new barcode for new product page.
+                var storeId = (await _storesRepository.GetSelectedStore(User.GetUserId())).Id;
+                var newBarcode = await _productsRepository.GenerateBarcode(storeId);
+                SelectedBarcode = newBarcode;
+                Message = "Yeni barkod yaradıldı";
+            }
+
             await InitializePage();
         }
 
@@ -144,6 +153,13 @@ namespace OpenPOS.Inventory.Pages.ProductPages
 
         public async Task<ActionResult> OnPostCreateProductAsync()
         {
+            if (string.IsNullOrEmpty(NewProduct.Barcode))
+            {
+                Message = "Barkod daxil edin";
+                await InitializePage();
+                return Page();
+            }
+
             var storeId = (await _storesRepository.GetSelectedStore(User.GetUserId())).Id;
             NewProduct.StoreId = storeId;
             if (IsExistingProduct)
@@ -165,7 +181,7 @@ namespace OpenPOS.Inventory.Pages.ProductPages
         {
             var store = await _storesRepository.GetSelectedStore(User.GetUserId());
             StoreId = store.Id;
-            Categories = await _categoriesRepository.GetCategories(StoreId);
+            Categories = await _categoriesRepository.GetCategories(User.GetUserId());
             Firms = await _firmsRepository.GetFirms(StoreId);
             Units = await _unitsRepository.GetUnits();
         }

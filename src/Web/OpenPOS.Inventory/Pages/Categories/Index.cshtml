@@ -1,0 +1,60 @@
+@page "/categories"
+@model OpenPOS.Inventory.Pages.Categories.CategoriesIndex
+
+@{
+	ViewData["title"] = "Kateqoriyalar";
+    Layout = "Shared/_Layout";
+}
+
+<div class="card flex-fill">
+	<div class="card-header">
+		<h5 class="card-title mb-0">Kateqoriyalar</h5>
+	</div>
+	<table class="table table-hover my-0">
+		<thead>
+		<tr>
+			<th>Kateqoriya adı</th>
+			<th>Əməliyyatlar</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<form method="post">
+				<td>
+					<input asp-for="NewCategory.Name" class="input" placeholder="Kateqoriya adı"/>
+				</td>
+				<td>
+					<button type="submit" class="btn btn-primary">Əlavə et</button>
+				</td>
+			</form>
+		</tr>
+		@if (Model.Categories != null)
+		{
+			@foreach (var category in Model.Categories)
+			{
+				<tr>
+					<td>@category.Name</td>
+					<td>
+						<div class="btn-group">
+							<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Əməliyyatlar
+							</button>
+							<div class="dropdown-menu">
+								<a class="dropdown-item" asp-page="/products" asp-page-categoryId="@category.Id">
+									<span style="color: blue">Məhsullara bax</span>
+								</a>
+								<div class="dropdown-divider"></div>
+								<form method="post">
+									<button type="submit" asp-page-handler="Delete" class="dropdown-item" href="/">
+										<span style="color: red">Sat</span>
+									</button>
+								</form>
+							</div>
+						</div>
+					</td>
+				</tr>
+			}
+		}
+		</tbody>
+	</table>
+</div>

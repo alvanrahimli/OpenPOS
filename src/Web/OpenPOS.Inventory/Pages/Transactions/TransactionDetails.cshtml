@@ -1,0 +1,81 @@
+@page "/transactions/{id:guid}"
+@using OpenPOS.Domain.Extensions
+@model OpenPOS.Inventory.Pages.Transactions.TransactionDetails
+
+@{
+    Layout = "Shared/_Layout";
+    ViewData["title"] = "Satış detalları";
+    ViewData["transactions-active"] = "active";
+}
+
+@if (Model.Transaction == null)
+{
+    <h2>Satış tapılmadı</h2>
+}
+else
+{
+    <div class="card flex-fill">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Satış detalları</h5>
+        </div>
+        <table class="table table-hover my-0">
+            <tbody>
+            <tr>
+                <th>Müştəri</th>
+                <td>@Model.Transaction.ClientName</td>
+            </tr>
+            <tr>
+                <th>Məbləğ</th>
+                <td>@Model.Transaction.TotalPrice</td>
+            </tr>
+            <tr>
+                <th>Metod</th>
+                <td>@Model.Transaction.PaymentMethod.Stringify()</td>
+            </tr>
+            <tr>
+                <th>Tarix</th>
+                <td>@Model.Transaction.Timestamp.ToString("dd MMM yyyy")</td>
+            </tr>
+            <tr>
+                <th>Qeydlər</th>
+                <td>@Model.Transaction.Notes</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    var counter = 1;
+    <div class="card flex-fill">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Satılan mallar</h5>
+        </div>
+        <table class="table table-hover my-0">
+            <thead>
+            <th><strong>#</strong></th>
+            <th>Məhsul adı</th>
+            <th>Miqdar</th>
+            <th>Qiymət</th>
+            </thead>
+            <tbody>
+            @foreach (var pv in Model.Transaction.IncludedProducts)
+            {
+                <tr>
+                    <td>@counter</td>
+                    @if (pv.ProductId == null)
+                    {
+                        <td>@pv.ProductName</td>
+                    }
+                    else
+                    {
+                        <td><a href="/products/add?id=@pv.ProductId">@pv.ProductName</a></td>
+                    }
+                    <td>@pv.Quantity @pv.UnitName</td>
+                    <td>@pv.TotalPrice ₼</td>
+                </tr>
+                
+                counter++;
+            }
+            </tbody>
+        </table>
+    </div>
+}

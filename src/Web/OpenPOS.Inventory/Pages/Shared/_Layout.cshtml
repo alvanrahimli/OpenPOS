@@ -49,7 +49,7 @@
 						</a>
 					</li>
 
-					<li class="sidebar-item">
+					<li class="sidebar-item @ViewData["products-active"]">
 						<a href="#products" data-bs-toggle="collapse" class="sidebar-link">
 							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Məhsullar</span>
 						</a>
@@ -62,6 +62,19 @@
 							</li>
 							<li class="sidebar-item">
 								<a class="sidebar-link" href="/categories">Kateqoriyalar</a>
+							</li>
+						</ul>
+					</li>
+					<li class="sidebar-item @ViewData["transactions-active"]">
+						<a href="#transactions" data-bs-toggle="collapse" class="sidebar-link">
+							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Satışlar</span>
+						</a>
+						<ul id="transactions" class="sidebar-dropdown list-unstyled" data-bs-parent="#sidebar">
+							<li class="sidebar-item">
+								<a class="sidebar-link" href="/transactions">Bütün satışlar</a>
+							</li>
+							<li class="sidebar-item">
+								<a class="sidebar-link" href="/transactions">Satış detalları</a>
 							</li>
 						</ul>
 					</li>
@@ -89,15 +102,6 @@
 					<i class="hamburger align-self-center"></i>
 				</a>
 
-				<form class="d-none d-sm-inline-block">
-					<div class="input-group input-group-navbar">
-						<input type="text" class="form-control" placeholder="Search…" aria-label="Search">
-						<button class="btn" type="button">
-							<i class="align-middle" data-feather="search"></i>
-						</button>
-					</div>
-				</form>
-				
 				@await RenderSectionAsync("StoreSelect", false)
 
 				<div class="navbar-collapse collapse">

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenPOS.Domain.Data;
@@ -18,16 +19,19 @@ namespace OpenPOS.Infrastructure.Repositories
     {
         private readonly PosContext _context;
         private readonly IStoresRepository _storesRepository;
+        private readonly UserManager<PosUser> _userManager;
         private readonly ILogger<TransactionsRepository> _logger;
         private readonly IMapper _mapper;
 
         public TransactionsRepository(PosContext context,
             IStoresRepository storesRepository,
+            UserManager<PosUser> userManager,
             ILogger<TransactionsRepository> logger,
             IMapper mapper)
         {
             _context = context;
             _storesRepository = storesRepository;
+            _userManager = userManager;
             _logger = logger;
             _mapper = mapper;
         }
@@ -89,6 +93,45 @@ namespace OpenPOS.Infrastructure.Repositories
 
             await _context.Transactions.AddAsync(transaction);
             await _context.SaveChangesAsync();
+            return _mapper.Map<TransactionDto>(transaction);
+        }
+
+        public async Task<List<TransactionDto>> GetTransactions(string userId, TransactionType? type = null)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var transactionsQuery = _context.Transactions
+                .AsNoTracking()
+                .Include(t => t.Client)
+                .Include(t => t.Firm)
+                .OrderByDescending(t => t.Timestamp)
+                .Where(t => t.StoreId == user.SelectedStoreId);
+            if (type != null)
+            {
+                transactionsQuery = transactionsQuery.Where(t => t.Type == type);
+            }
+
+            var transactions = await transactionsQuery.ToListAsync();
+            return _mapper.Map<List<TransactionDto>>(transactions);
+        }
+
+        public async Task<TransactionDto> GetTransactionById(string userId, Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var transaction = await _context.Transactions.AsNoTracking()
+                .Include(t => t.Client)
+                .Include(t => t.Firm)
+                .Include(t => t.IncludedProducts)
+                .FirstOrDefaultAsync(t => t.Id == id && t.StoreId == user.SelectedStoreId);
             return _mapper.Map<TransactionDto>(transaction);
         }
     }

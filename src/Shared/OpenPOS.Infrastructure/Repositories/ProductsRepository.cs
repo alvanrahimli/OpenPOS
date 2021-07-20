@@ -57,6 +57,7 @@ namespace OpenPOS.Infrastructure.Repositories
                 {
                     "Name" => productsQuery.Where(p => p.Name.Contains(filterContext.SearchTerm)),
                     "Barcode" => productsQuery.Where(p => p.Barcode == filterContext.SearchTerm),
+                    "Category" => productsQuery.Where(p => p.Category.Name == filterContext.SearchTerm),
                     _ => productsQuery
                 };
             }

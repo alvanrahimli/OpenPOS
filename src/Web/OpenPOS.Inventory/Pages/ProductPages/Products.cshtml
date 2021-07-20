@@ -1,9 +1,11 @@
 @page "/products"
+@using OpenPOS.Domain.Models
 @model OpenPOS.Inventory.Pages.ProductPages.ProductsPageModel
 
 @{
 	ViewData["title"] = "Məhsullar";
-    Layout = "Shared/_Layout";
+	ViewData["products-active"] = "active";
+	Layout = "Shared/_Layout";
 	var counter = 1;
 }
 
@@ -113,13 +115,23 @@
 									<option>Parametr seçin</option>
 									<option value="Barcode">Barkoda görə</option>
 									<option value="Name">Məhsul adına görə</option>
+									<option value="Category">Kateqoriyaya görə</option>
 								</select>
 							</div>
 						</div>
 						<div class="col-7">
 							<div class="form-group">
 								<label asp-for="FilterContext.SearchTerm">Axtarış mətni</label>
-								<input asp-for="FilterContext.SearchTerm" class="form-control">
+								<input asp-for="FilterContext.SearchTerm" class="form-control" list="categories">
+								<datalist id="categories">
+									@if (Model.Categories != null)
+									{
+										foreach (var category in Model.Categories)
+										{
+											<option>@category.Name</option>
+										}
+									}
+								</datalist>
 							</div>
 						</div>
 					</div>

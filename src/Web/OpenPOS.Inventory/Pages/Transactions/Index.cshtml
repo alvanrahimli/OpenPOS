@@ -1,0 +1,45 @@
+@page "/transactions"
+@using OpenPOS.Domain.Extensions
+@model OpenPOS.Inventory.Pages.Transactions.TransactionsIndex
+
+@{
+    Layout = "Shared/_Layout";
+    ViewData["title"] = "Satışlar";
+	ViewData["transactions-active"] = "active";
+	var counter = 1;
+}
+
+<div class="card flex-fill">
+	<div class="card-header">
+		<h5 class="card-title mb-0">Satış siyahısı</h5>
+	</div>
+	<table class="table table-hover my-0">
+		<thead>
+		<tr>
+			<th><strong>#</strong></th>
+			<th>Metod</th>
+			<th>Məbləğ</th>
+			<th>Müştəri</th>
+			<th>Qeydlər</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var transaction in Model.Transactions)
+		{
+			<tr>
+				<td><strong>@counter</strong></td>
+				<td>@transaction.PaymentMethod.Stringify()</td>
+				<td>@transaction.TotalPrice ₼</td>
+				<td>@transaction.ClientName</td>
+				<td>@transaction.Notes</td>
+				<td>
+					<a class="btn btn-primary btn-sm" href="/transactions/@transaction.Id">Ətraflı</a>
+				</td>
+			</tr>
+
+			counter++;
+		}
+		</tbody>
+	</table>
+</div>

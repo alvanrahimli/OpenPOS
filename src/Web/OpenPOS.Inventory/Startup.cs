@@ -82,6 +82,7 @@ namespace OpenPOS.Inventory
             services.AddScoped<ICategoriesRepository, CategoriesRepository>();
             services.AddScoped<IUnitsRepository, UnitsRepository>();
             services.AddScoped<IFirmsRepository, FirmsRepository>();
+            services.AddScoped<IClientsRepository, ClientsRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

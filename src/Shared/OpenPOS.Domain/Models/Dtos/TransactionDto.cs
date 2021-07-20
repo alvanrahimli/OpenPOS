@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using OpenPOS.Domain.Enums;
 
 namespace OpenPOS.Domain.Models.Dtos
@@ -17,5 +20,10 @@ namespace OpenPOS.Domain.Models.Dtos
 
         public Guid? FirmId { get; set; }
         public Firm Firm { get; set; }
+
+        public List<ProductVariantDto> IncludedProducts { get; set; }
+        
+        [JsonIgnore] 
+        public string ClientName => Client?.Name ?? "Yoxdur";
     }
 }

@@ -17,25 +17,63 @@
 			<div class="row">
 				<div class="col-lg-4 col-md-6 col-sm-12">
 					<div class="row">
-						<div class="col-12">
-							<div class="form-group">
-								<label asp-for="FilterContext.LimitBy">Limitlər</label>
-								<select asp-for="FilterContext.LimitBy" class="form-control">
-									<option value="">Parametr seçin</option>
-									<option value="TotalPrice">Məbləğ</option>
-								</select>
-							</div>
-						</div>
 						<div class="col-6">
 							<div class="form-group">
-								<label asp-for="FilterContext.FromPrice">Minimum qiymət</label>
+								<label asp-for="FilterContext.FromPrice">Min. qiymət</label>
 								<input type="number" step="any" asp-for="FilterContext.FromPrice" class="form-control">
 							</div>
 						</div>
 						<div class="col-6">
 							<div class="form-group">
-								<label asp-for="FilterContext.ToPrice">Maksimum qiymət</label>
+								<label asp-for="FilterContext.ToPrice">Maks. qiymət</label>
 								<input type="number" step="any" asp-for="FilterContext.ToPrice" class="form-control">
+							</div>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="form-group">
+							<label asp-for="FilterContext.PaymentMethod">Ödəniş metodu</label>
+							<select asp-for="FilterContext.PaymentMethod" class="form-control">
+								<option>Seçilməyib</option>
+								<option value="cash">Nəğd</option>
+								<option value="card">Kart</option>
+								<option value="loan">Nisyə</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-12">
+							<div class="form-group">
+								<label asp-for="FilterContext.SearchTerm">Qeydə görə axtarış</label>
+								<input asp-for="FilterContext.SearchTerm" class="form-control" placeholder="Axtarış mətni">
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="row">
+								<div class="col-6">
+									<div class="form-group">
+										<label asp-for="FilterContext.ClientId">Müştəriyə görə</label>
+										<select asp-for="FilterContext.ClientId" class="form-control">
+											<option>Seçilməyib</option>
+											@foreach (var client in Model.Clients)
+											{
+												<option value="@client.Id">@client.Name</option>
+											}
+										</select>
+									</div>
+								</div>
+								<div class="col-6">
+									<label asp-for="FilterContext.FirmId">Firmaya görə</label>
+									<select asp-for="FilterContext.FirmId" class="form-control">
+										<option>Seçilməyib</option>
+										@foreach (var firm in Model.Firms)
+										{
+											<option value="@firm.Id">@firm.Name</option>
+										}
+									</select>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -95,89 +133,11 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-4 col-md-6 col-sm-12">
-					<div class="row">
-						<div class="col-5">
-							<div class="form-group">
-								<label asp-for="FilterContext.SearchBy">Axtarış et</label>
-								<select asp-for="FilterContext.SearchBy" class="form-control">
-									<option>Parametr seçin</option>
-									@* <option value="Method">Ödəniş metoduna görə</option> *@
-									@* <option value="Client">Müştəriyə görə</option> *@
-									@* <option value="Firm">Firmaya görə</option> *@
-									<option value="Notes">Qeydlərə görə</option>
-								</select>
-							</div>
-						</div>
-						<div class="col-7">
-							<div class="form-group">
-								<label asp-for="FilterContext.SearchTerm">Axtarış mətni</label>
-								<input asp-for="FilterContext.SearchTerm" class="form-control">
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-6">
-								<div class="form-group">
-									@* <input type="checkbox" asp-for="FilterContext.FilterClients"> *@
-									@* <label asp-for="FilterContext.FilterClients">Müştəriyə görə</label> *@
-									<label>Müştəriyə görə</label>
-									<select asp-for="FilterContext.ClientId" class="form-control">
-										<option>Seçilməyib</option>
-										@foreach (var client in Model.Clients)
-										{
-											<option value="@client.Id">@client.Name</option>
-										}
-									</select>
-								</div>
-							</div>
-							<div class="col-6">
-								@* <input type="checkbox" asp-for="FilterContext.FilterFirm"> *@
-								@* <label asp-for="FilterContext.FilterFirm">Firmaya görə</label> *@
-								<label>Firmaya görə</label>
-								<select asp-for="FilterContext.FirmId" class="form-control">
-									<option>Seçilməyib</option>
-									@foreach (var firm in Model.Firms)
-									{
-										<option value="@firm.Id">@firm.Name</option>
-									}
-								</select>
-							</div>
-						</div>
-					</div>
-				</div>
-				@* <div class="col-lg-4 col-md-6 col-sm-12"> *@
-				@* 	<div class="row"> *@
-				@* 		<div class="col-6"> *@
-				@* 			<div class="form-group"> *@
-				@* 				<input type="checkbox" asp-for="FilterContext.FilterClients"> *@
-				@* 				<label asp-for="FilterContext.FilterClients">Müştəriyə görə</label> *@
-				@* 				<select asp-for="FilterContext.ClientTerm" class="form-control"> *@
-				@* 					<option>Seçilməyib</option> *@
-				@* 					@foreach (var client in Model.Clients) *@
-				@* 					{ *@
-				@* 						<option value="@client.Id">@client.Name</option> *@
-				@* 					} *@
-				@* 				</select> *@
-				@* 			</div> *@
-				@* 		</div> *@
-				@* 		<div class="col-6"> *@
-				@* 			<input type="checkbox" asp-for="FilterContext.FilterFirm"> *@
-    @*                         <label asp-for="FilterContext.FilterFirm">Firmaya görə</label> *@
-				@* 			<select asp-for="FilterContext.FirmTerm" class="form-control"> *@
-				@* 				<option>Seçilməyib</option> *@
-				@* 				@foreach (var firm in Model.Firms) *@
-				@* 				{ *@
-				@* 					<option value="@firm.Id">@firm.Name</option> *@
-				@* 				} *@
-				@* 			</select> *@
-				@* 		</div> *@
-				@* 	</div> *@
-				@* </div> *@
 			</div>
 			
 			<div class="filter-submit-button">
-				<button type="submit" class="btn btn-primary">Axtar</button>
-				<button type="submit" class="btn btn-outline-danger disabled" asp-page-handler="ClearFilter">Təmizlə</button>
+				<button type="submit" class="btn btn-primary" asp-page-handler="Search">Axtar</button>
+				<a type="submit" class="btn btn-outline-danger" href="/transactions">Təmizlə</a>
 			</div>
 		</form>
 	</div>

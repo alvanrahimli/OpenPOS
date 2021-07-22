@@ -116,6 +116,15 @@ namespace OpenPOS.Infrastructure.Repositories
                 transactionsQuery = transactionsQuery.Where(t => t.Type == type);
             }
 
+            if (!string.IsNullOrEmpty(filterContext.PaymentMethod))
+            {
+                var parsed = Enum.TryParse(filterContext.PaymentMethod, true, out PaymentMethod method);
+                if (parsed)
+                {
+                    transactionsQuery = transactionsQuery.Where(t => t.PaymentMethod == method);
+                }
+            }
+
             if (!string.IsNullOrEmpty(filterContext.SearchBy) && !string.IsNullOrEmpty(filterContext.SearchTerm))
             {
                 var _ = Enum.TryParse(filterContext.SearchTerm, out PaymentMethod method);
@@ -169,7 +178,7 @@ namespace OpenPOS.Infrastructure.Repositories
                 transactionsQuery = transactionsQuery.OrderByDescending(t => t.Timestamp);
             }
 
-            if (!string.IsNullOrEmpty(filterContext.LimitBy))
+            if (!string.IsNullOrEmpty(filterContext.LimitBy) && (filterContext.FromPrice > 0 || filterContext.ToPrice > 0))
             {
                 transactionsQuery = filterContext.LimitBy switch
                 {

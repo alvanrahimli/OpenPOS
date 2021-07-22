@@ -38,11 +38,9 @@ namespace OpenPOS.Infrastructure.Repositories
             _mapper = mapper;
         }
 
-        public async Task<PaginatedList<ProductDto>> GetProducts(Guid storeId, ProductFilterContext filterContext,
+        public async Task<PaginatedList<ProductDto>> GetProducts(Guid storeId, FilterContext filterContext,
             int offset, int limit)
         {
-            var user = await _userManager.FindByEmailAsync("alvanuser@gmail.com");
-            
             var productsQuery = _context.Products
                 .AsNoTracking()
                 .Include(p => p.Category)
@@ -61,22 +59,7 @@ namespace OpenPOS.Infrastructure.Repositories
                     _ => productsQuery
                 };
             }
-
-            // Price boundaries accoring given parameter
-            if (filterContext.LimitBy != null)
-            {
-                productsQuery = filterContext.LimitBy switch
-                {
-                    "SalePrice" => productsQuery.Where(p =>
-                        p.SalePrice > filterContext.FromPrice && p.SalePrice < filterContext.ToPrice),
-                    "PurchasePrice" => productsQuery.Where(p =>
-                        p.PurchasePrice > filterContext.FromPrice && p.PurchasePrice < filterContext.ToPrice),
-                    "SecondSalePrice" => productsQuery.Where(p =>
-                        p.SecondSalePrice > filterContext.FromPrice && p.SecondSalePrice < filterContext.ToPrice),
-                    _ => productsQuery
-                };
-            }
-
+            
             // Orders products by given parameter
             if (filterContext.OrderBy != null)
             {
@@ -109,6 +92,21 @@ namespace OpenPOS.Infrastructure.Repositories
             {
                 // If no parameter is provided, order by name
                 productsQuery = productsQuery.OrderBy(p => p.Name);
+            }
+
+            // Price boundaries accoring given parameter
+            if (filterContext.LimitBy != null)
+            {
+                productsQuery = filterContext.LimitBy switch
+                {
+                    "SalePrice" => productsQuery.Where(p =>
+                        p.SalePrice > filterContext.FromPrice && p.SalePrice < filterContext.ToPrice),
+                    "PurchasePrice" => productsQuery.Where(p =>
+                        p.PurchasePrice > filterContext.FromPrice && p.PurchasePrice < filterContext.ToPrice),
+                    "SecondSalePrice" => productsQuery.Where(p =>
+                        p.SecondSalePrice > filterContext.FromPrice && p.SecondSalePrice < filterContext.ToPrice),
+                    _ => productsQuery
+                };
             }
 
             // Pagination

@@ -41,7 +41,7 @@ namespace OpenPOS.Inventory.Pages.ProductPages
         }
 
         [BindProperty(SupportsGet = true)]
-        public ProductFilterContext FilterContext { get; set; }
+        public FilterContext FilterContext { get; set; }
         [BindProperty]
         public ProductIncomeContext IncomeContext { get; set; }
 
@@ -80,7 +80,7 @@ namespace OpenPOS.Inventory.Pages.ProductPages
                 return;
             }
 
-            FilterContext ??= new ProductFilterContext
+            FilterContext ??= new FilterContext
             {
                 LimitBy = "SalePrice",
                 FromPrice = 0,

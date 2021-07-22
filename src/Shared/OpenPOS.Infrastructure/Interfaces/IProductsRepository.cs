@@ -10,7 +10,7 @@ namespace OpenPOS.Infrastructure.Interfaces
 {
     public interface IProductsRepository
     {
-        Task<PaginatedList<ProductDto>> GetProducts(Guid storeId, ProductFilterContext filterContext,
+        Task<PaginatedList<ProductDto>> GetProducts(Guid storeId, FilterContext filterContext,
             int offset, int limit);
         Task<ProductDto> GetProduct(Guid id);
         Task<ProductDto> CreateProduct(ProductDto input);

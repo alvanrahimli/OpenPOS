@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using OpenPOS.Domain.Data;
 using OpenPOS.Domain.Enums;
 using OpenPOS.Domain.Extensions;
@@ -33,15 +34,13 @@ namespace OpenPOS.Sale.Pages
         [Inject] public ILogger<Sale> Logger { get; set; }
         [Inject] public IDistributedCache Cache { get; set; }
         [Inject] public IMapper Mapper { get; set; }
+        [Inject] public IJSRuntime JsRuntime { get; set; }
 
         private bool IsBusy { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            NewTransaction = new CreateTransactionContext
-            {
-                IncludedProducts = new List<ProductVariantContext>()
-            };
+            NewTransaction = new CreateTransactionContext();
 
             await using var context = DbContextFactory.CreateDbContext();
             var userId = HttpContextAccessor.HttpContext?.User.GetUserId();
@@ -116,11 +115,18 @@ namespace OpenPOS.Sale.Pages
                 }
 
                 _barcode = string.Empty;
+                _uiMessage = null;
             }
         }
 
         private async Task SubmitTransaction()
         {
+            if (NewTransaction.IncludedProducts.Count == 0)
+            {
+                _uiMessage = "Satmaq üçün məhsul əlavə edin";
+                return;
+            }
+            
             if (IsBusy)
             {
                 return;
@@ -147,6 +153,7 @@ namespace OpenPOS.Sale.Pages
                     Notes = NewTransaction.Notes
                 };
                 
+                // TODO: Report failed products to user 
                 var unfoundProducts = new List<Guid>();
                 foreach (var soldProduct in NewTransaction.IncludedProducts)
                 {
@@ -187,6 +194,7 @@ namespace OpenPOS.Sale.Pages
                     transaction.IncludedProducts.Add(productVariant);
                 }
 
+                // Add client if name was given
                 if (!string.IsNullOrEmpty(NewTransaction.ClientName))
                 {
                     var client = await context.Clients.FirstOrDefaultAsync(c => c.Name == NewTransaction.ClientName
@@ -213,20 +221,46 @@ namespace OpenPOS.Sale.Pages
                 var dbRes = await context.SaveChangesAsync();
                 if (dbRes <= 0)
                 {
+                    await AlertifyError("Satış həyata keçmədi");
                     _uiMessage = "Satış həyata keçmədi";
                 }
 
-                _uiMessage = "Satış həyata keçirildi";
+                // Successfull
+                await AlertifySuccess("Satış həyata keçirildi");
+                await JsRuntime.InvokeVoidAsync("eval", "document.getElementById('barcode-input').focus()");
+                ResetForm();
             }
             catch (Exception e)
             {
                 Logger.LogError("Error occured: {Error}", e.Message);
-                _uiMessage = "Yenidən cəhd edin";
+                // _uiMessage = "Yenidən cəhd edin";
+                await AlertifyError("Yenidən cəhd edin");
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+
+        private void ResetForm()
+        {
+            NewTransaction = new CreateTransactionContext();
+            _uiMessage = null;
+        }
+
+        private async Task AlertifySuccess(string text)
+        {
+            await JsRuntime.InvokeVoidAsync("alertify.success", text);
+        }
+        
+        private async Task AlertifyWarning(string text)
+        {
+            await JsRuntime.InvokeVoidAsync("alertify.warning", text);
+        }
+        
+        private async Task AlertifyError(string text)
+        {
+            await JsRuntime.InvokeVoidAsync("alertify.error", text);
         }
     }
 }

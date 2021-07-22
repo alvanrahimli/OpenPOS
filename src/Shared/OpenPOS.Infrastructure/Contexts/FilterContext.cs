@@ -1,6 +1,6 @@
 namespace OpenPOS.Infrastructure.Contexts
 {
-    public class ProductFilterContext
+    public class FilterContext
     {
         public int Offset { get; set; }
         public int Limit { get; set; }

@@ -8,5 +8,6 @@ namespace OpenPOS.Infrastructure.Interfaces
     public interface IFirmsRepository
     {
         Task<List<Firm>> GetFirms(Guid storeId);
+        Task<List<Firm>> GetFirmsForUser(string userId);
     }
 }

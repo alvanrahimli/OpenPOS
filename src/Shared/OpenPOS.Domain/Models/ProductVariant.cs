@@ -11,7 +11,7 @@ namespace OpenPOS.Domain.Models
         public string UnitName { get; set; }
         public decimal Quantity { get; set; }
         public decimal SalePrice { get; set; }
-        [NotMapped] 
+        [NotMapped]
         public decimal TotalPrice => Quantity * SalePrice;
         
         public Guid? ProductId { get; set; }

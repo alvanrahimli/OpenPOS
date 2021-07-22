@@ -19,6 +19,6 @@ namespace OpenPOS.Infrastructure.Contexts
         public string ClientNotes { get; set; }
         public Guid? FirmId { get; set; }
 
-        public List<ProductVariantContext> IncludedProducts { get; set; }
+        public List<ProductVariantContext> IncludedProducts { get; set; } = new();
     }
 }

@@ -45,9 +45,10 @@ label {
 }
 
 .filter-submit-button {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
+    /*position: absolute;*/
+    /*right: 20px;*/
+    /*bottom: 20px;*/
+    float: right;
 }
 
 .filter-clear-button {

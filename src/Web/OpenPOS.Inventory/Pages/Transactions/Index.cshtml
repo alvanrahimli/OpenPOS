@@ -1,4 +1,5 @@
 @page "/transactions"
+@using OpenPOS.Domain.Enums
 @using OpenPOS.Domain.Extensions
 @model OpenPOS.Inventory.Pages.Transactions.TransactionsIndex
 
@@ -9,14 +10,190 @@
 	var counter = 1;
 }
 
+@* Filter section *@
+<div class="card">
+	<div class="card-body">
+		<form method="get">
+			<div class="row">
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-12">
+							<div class="form-group">
+								<label asp-for="FilterContext.LimitBy">Limitlər</label>
+								<select asp-for="FilterContext.LimitBy" class="form-control">
+									<option value="">Parametr seçin</option>
+									<option value="TotalPrice">Məbləğ</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group">
+								<label asp-for="FilterContext.FromPrice">Minimum qiymət</label>
+								<input type="number" step="any" asp-for="FilterContext.FromPrice" class="form-control">
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group">
+								<label asp-for="FilterContext.ToPrice">Maksimum qiymət</label>
+								<input type="number" step="any" asp-for="FilterContext.ToPrice" class="form-control">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-12">
+							<div class="form-group">
+								<label asp-for="FilterContext.OrderBy">Sırala</label>
+								<span style="float: right">
+									<input type="checkbox" asp-for="FilterContext.IsDescending">
+									<label asp-for="FilterContext.IsDescending">Azalan sıra ilə</label>
+								</span>
+								<select asp-for="FilterContext.OrderBy" class="form-control">
+									<option value="Timestamp">Vaxta görə</option>
+									<option value="TotalPrice">Məbləğə görə</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label>Səhifələmə</label><br>
+								@{
+									var possibleIndex = Model.Transactions.CurrentPage - 3;
+									var startIndex = possibleIndex > 0 ? possibleIndex : 0;
+								}
+								<div>
+									<div class="row">
+										<div class="col-9">
+											<span class="btn-group me-2 mt-2" role="group" aria-label="PaginationGroup">
+												@for (var i = startIndex; i < Model.Transactions.CurrentPage + 3 && i <= Model.Transactions.TotalPages; i++)
+												{
+													if (i == Model.Transactions.CurrentPage - 1)
+													{
+														<input type="submit" class="btn btn-primary" name="pageNum" value="@(i + 1)">
+													}
+													else
+													{
+														<input type="submit" class="btn btn-secondary" name="pageNum" value="@(i + 1)">
+													}
+												}
+											</span>
+										</div>
+										<div class="col-3">
+											<select asp-for="FilterContext.Limit" class="form-control">
+												<option value="2">2</option>
+												<option value="50">50</option>
+												<option value="100">100</option>
+												<option value="150">150</option>
+												<option value="200">200</option>
+												<option value="500">500</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6 col-sm-12">
+					<div class="row">
+						<div class="col-5">
+							<div class="form-group">
+								<label asp-for="FilterContext.SearchBy">Axtarış et</label>
+								<select asp-for="FilterContext.SearchBy" class="form-control">
+									<option>Parametr seçin</option>
+									@* <option value="Method">Ödəniş metoduna görə</option> *@
+									@* <option value="Client">Müştəriyə görə</option> *@
+									@* <option value="Firm">Firmaya görə</option> *@
+									<option value="Notes">Qeydlərə görə</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-7">
+							<div class="form-group">
+								<label asp-for="FilterContext.SearchTerm">Axtarış mətni</label>
+								<input asp-for="FilterContext.SearchTerm" class="form-control">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group">
+									@* <input type="checkbox" asp-for="FilterContext.FilterClients"> *@
+									@* <label asp-for="FilterContext.FilterClients">Müştəriyə görə</label> *@
+									<label>Müştəriyə görə</label>
+									<select asp-for="FilterContext.ClientId" class="form-control">
+										<option>Seçilməyib</option>
+										@foreach (var client in Model.Clients)
+										{
+											<option value="@client.Id">@client.Name</option>
+										}
+									</select>
+								</div>
+							</div>
+							<div class="col-6">
+								@* <input type="checkbox" asp-for="FilterContext.FilterFirm"> *@
+								@* <label asp-for="FilterContext.FilterFirm">Firmaya görə</label> *@
+								<label>Firmaya görə</label>
+								<select asp-for="FilterContext.FirmId" class="form-control">
+									<option>Seçilməyib</option>
+									@foreach (var firm in Model.Firms)
+									{
+										<option value="@firm.Id">@firm.Name</option>
+									}
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				@* <div class="col-lg-4 col-md-6 col-sm-12"> *@
+				@* 	<div class="row"> *@
+				@* 		<div class="col-6"> *@
+				@* 			<div class="form-group"> *@
+				@* 				<input type="checkbox" asp-for="FilterContext.FilterClients"> *@
+				@* 				<label asp-for="FilterContext.FilterClients">Müştəriyə görə</label> *@
+				@* 				<select asp-for="FilterContext.ClientTerm" class="form-control"> *@
+				@* 					<option>Seçilməyib</option> *@
+				@* 					@foreach (var client in Model.Clients) *@
+				@* 					{ *@
+				@* 						<option value="@client.Id">@client.Name</option> *@
+				@* 					} *@
+				@* 				</select> *@
+				@* 			</div> *@
+				@* 		</div> *@
+				@* 		<div class="col-6"> *@
+				@* 			<input type="checkbox" asp-for="FilterContext.FilterFirm"> *@
+    @*                         <label asp-for="FilterContext.FilterFirm">Firmaya görə</label> *@
+				@* 			<select asp-for="FilterContext.FirmTerm" class="form-control"> *@
+				@* 				<option>Seçilməyib</option> *@
+				@* 				@foreach (var firm in Model.Firms) *@
+				@* 				{ *@
+				@* 					<option value="@firm.Id">@firm.Name</option> *@
+				@* 				} *@
+				@* 			</select> *@
+				@* 		</div> *@
+				@* 	</div> *@
+				@* </div> *@
+			</div>
+			
+			<div class="filter-submit-button">
+				<button type="submit" class="btn btn-primary">Axtar</button>
+				<button type="submit" class="btn btn-outline-danger disabled" asp-page-handler="ClearFilter">Təmizlə</button>
+			</div>
+		</form>
+	</div>
+</div>
+
 <div class="card flex-fill">
 	<div class="card-header">
 		<h5 class="card-title mb-0">Satış siyahısı</h5>
 	</div>
-	<table class="table table-hover my-0">
+	<div class="table-responsive">
+		<table class="table table-hover my-0">
 		<thead>
 		<tr>
 			<th><strong>#</strong></th>
+			<th>Tip</th>
+			<th>Tarix</th>
 			<th>Metod</th>
 			<th>Məbləğ</th>
 			<th>Müştəri</th>
@@ -29,12 +206,27 @@
 		{
 			<tr>
 				<td><strong>@counter</strong></td>
+				<td>
+					@if (transaction.Type == TransactionType.Sale)
+					{
+						<span class="badge bg-success" style="font-size: 100%;">@transaction.Type.Stringify()</span>
+					}
+					else if (transaction.Type == TransactionType.Income)
+					{
+						<span class="badge bg-warning" style="font-size: 100%;">@transaction.Type.Stringify()</span>
+					}
+					else if (transaction.Type == TransactionType.Return)
+					{
+						<span class="badge bg-danger" style="font-size: 100%;">@transaction.Type.Stringify()</span>
+					}
+				</td>
+				<td>@transaction.Timestamp.ToString("dd MMM yyyy")</td>
 				<td>@transaction.PaymentMethod.Stringify()</td>
 				<td>@transaction.TotalPrice ₼</td>
 				<td>@transaction.ClientName</td>
 				<td>@transaction.Notes</td>
 				<td>
-					<a class="btn btn-primary btn-sm" href="/transactions/@transaction.Id">Ətraflı</a>
+					<a class="btn btn-primary btn-sm" href="/transactions/@transaction.Id" target="_blank">Ətraflı</a>
 				</td>
 			</tr>
 
@@ -42,4 +234,5 @@
 		}
 		</tbody>
 	</table>
+	</div>
 </div>

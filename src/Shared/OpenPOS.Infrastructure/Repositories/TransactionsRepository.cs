@@ -12,6 +12,7 @@ using OpenPOS.Domain.Models;
 using OpenPOS.Domain.Models.Dtos;
 using OpenPOS.Infrastructure.Contexts;
 using OpenPOS.Infrastructure.Interfaces;
+using OpenPOS.Infrastructure.Utils;
 
 namespace OpenPOS.Infrastructure.Repositories
 {
@@ -95,8 +96,9 @@ namespace OpenPOS.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return _mapper.Map<TransactionDto>(transaction);
         }
-
-        public async Task<List<TransactionDto>> GetTransactions(string userId, TransactionType? type = null)
+        
+        public async Task<PaginatedList<TransactionDto>> GetTransactionsFilter(string userId, TransactionFilterContext filterContext,
+            TransactionType? type = null)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -104,19 +106,93 @@ namespace OpenPOS.Infrastructure.Repositories
                 throw new Exception("User not found");
             }
 
-            var transactionsQuery = _context.Transactions
-                .AsNoTracking()
+            var transactionsQuery = _context.Transactions.AsNoTracking()
                 .Include(t => t.Client)
                 .Include(t => t.Firm)
-                .OrderByDescending(t => t.Timestamp)
                 .Where(t => t.StoreId == user.SelectedStoreId);
+
             if (type != null)
             {
                 transactionsQuery = transactionsQuery.Where(t => t.Type == type);
             }
 
+            if (!string.IsNullOrEmpty(filterContext.SearchBy) && !string.IsNullOrEmpty(filterContext.SearchTerm))
+            {
+                var _ = Enum.TryParse(filterContext.SearchTerm, out PaymentMethod method);
+
+                transactionsQuery = filterContext.SearchBy switch
+                {
+                    "Method" => transactionsQuery.Where(t => t.PaymentMethod == method),
+                    "Client" => transactionsQuery.Where(t => t.Client.Name.Contains(filterContext.SearchTerm)),
+                    "Firm" => transactionsQuery.Where(t => t.Firm.Name.Contains(filterContext.SearchTerm)),
+                    "Notes" => transactionsQuery.Where(t => t.Notes.Contains(filterContext.SearchTerm)),
+                    _ => transactionsQuery
+                };
+            }
+
+            // Apply client filter
+            if (filterContext.ClientId != null)
+            {
+                transactionsQuery = transactionsQuery.Where(t => t.ClientId == filterContext.ClientId);
+            }
+            
+            // Apply firm filter
+            if (filterContext.FirmId != null)
+            {
+                transactionsQuery = transactionsQuery.Where(t => t.FirmId == filterContext.FirmId);
+            }
+
+            // Order by parameter if is argument has passed
+            if (!string.IsNullOrEmpty(filterContext.OrderBy))
+            {
+                if (filterContext.IsDescending)
+                {
+                    transactionsQuery = filterContext.OrderBy switch
+                    {
+                        "TotalPrice" => transactionsQuery.OrderByDescending(t => t.TotalPrice),
+                        "Timestamp" => transactionsQuery.OrderByDescending(t => t.Timestamp),
+                        _ => transactionsQuery.OrderByDescending(t => t.Timestamp)
+                    };
+                }
+                else
+                {
+                    transactionsQuery = filterContext.OrderBy switch
+                    {
+                        "TotalPrice" => transactionsQuery.OrderBy(t => t.TotalPrice),
+                        "Timestamp" => transactionsQuery.OrderBy(t => t.Timestamp),
+                        _ => transactionsQuery.OrderBy(t => t.Timestamp)
+                    };
+                }
+            }
+            else
+            {
+                transactionsQuery = transactionsQuery.OrderByDescending(t => t.Timestamp);
+            }
+
+            if (!string.IsNullOrEmpty(filterContext.LimitBy))
+            {
+                transactionsQuery = filterContext.LimitBy switch
+                {
+                    "TotalPrice" => transactionsQuery.Where(t => t.TotalPrice > filterContext.FromPrice
+                                                                 && t.TotalPrice < filterContext.ToPrice),
+                    _ => transactionsQuery
+                };
+            }
+
+            transactionsQuery = transactionsQuery.Skip(filterContext.Offset).Take(filterContext.Limit);
+
             var transactions = await transactionsQuery.ToListAsync();
-            return _mapper.Map<List<TransactionDto>>(transactions);
+            var mapped = _mapper.Map<List<TransactionDto>>(transactions);
+
+            var totalTransactionOfStore = await _context.Transactions
+                .AsNoTracking()
+                .Where(t => t.StoreId == user.SelectedStoreId)
+                .CountAsync();
+            var totalPages = totalTransactionOfStore / filterContext.Limit;
+            var currentPage = filterContext.Offset / filterContext.Limit + 1;
+
+            var paginatedList = new PaginatedList<TransactionDto>(mapped, totalPages, currentPage);
+            return paginatedList;
         }
 
         public async Task<TransactionDto> GetTransactionById(string userId, Guid id)

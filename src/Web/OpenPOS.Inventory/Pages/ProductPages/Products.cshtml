@@ -151,64 +151,66 @@
 	<div class="card-header">
 		<h5 class="card-title mb-0">Məhsul siyahısı</h5>
 	</div>
-	<table class="table table-hover my-0">
-		<thead>
-		<tr>
-			<th><strong>#</strong></th>
-			<th>Barkod</th>
-			<th>Məhsulun adı</th>
-			<th>Alış</th>
-			<th>Satış</th>
-			<th>Sayı</th>
-			<th>Kateqoriya</th>
-			<th>Qeydlər</th>
-			<th></th>
-		</tr>
-		</thead>
-		<tbody>
-		@foreach (var product in Model.Products)
-		{
+	<div class="table-responsive">
+		<table class="table table-hover my-0">
+			<thead>
 			<tr>
-				<td><strong>@counter</strong></td>
-				<td>@product.Barcode</td>
-				<td><a href="/products/add?id=@product.Id">@product.Name</a></td>
-				<td>@product.PurchasePrice ₼</td>
-				<td>@product.SalePrice ₼</td>
-				<td>
-					@if (product.StockCount < product.AlertStockCount && product.AlertStockCount > 0)
-					{
-						<span class="badge bg-danger" style="font-size: 100%;">@product.StockCount (@product.Unit.DisplayName)</span>
-					}
-					else
-					{
-						<span>@product.StockCount (@product.Unit.DisplayName)</span>
-					}
-				</td>
-				<td>@product.CategoryName</td>
-				<td style="max-width: 400px">@product.Notes</td>
-				<td>
-					<div class="btn-group">
-						<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Əməliyyatlar
-						</button>
-						<div class="dropdown-menu">
-							<button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#incomeModal"
-							        data-bs-productName="@product.Name" data-bs-productId="@product.Id" data-bs-firmId="@product.FirmId"
-							        data-bs-unitId="@product.UnitId">
-								<span style="color: blue">Mədaxil</span>
-							</button>
-							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="/products/add?id=@product.Id">Redaktə et</a>
-							<a class="dropdown-item" href="#"><span style="color: blue">Sat</span></a>
-						</div>
-					</div>
-				</td>
+				<th><strong>#</strong></th>
+				<th>Barkod</th>
+				<th>Məhsulun adı</th>
+				<th>Alış</th>
+				<th>Satış</th>
+				<th>Sayı</th>
+				<th>Kateqoriya</th>
+				<th>Qeydlər</th>
+				<th></th>
 			</tr>
+			</thead>
+			<tbody>
+			@foreach (var product in Model.Products)
+			{
+				<tr>
+					<td><strong>@counter</strong></td>
+					<td>@product.Barcode</td>
+					<td><a href="/products/add?id=@product.Id">@product.Name</a></td>
+					<td>@product.PurchasePrice ₼</td>
+					<td>@product.SalePrice ₼</td>
+					<td>
+						@if (product.StockCount < product.AlertStockCount && product.AlertStockCount > 0)
+						{
+							<span class="badge bg-danger" style="font-size: 100%;">@product.StockCount (@product.Unit.DisplayName)</span>
+						}
+						else
+						{
+							<span>@product.StockCount (@product.Unit.DisplayName)</span>
+						}
+					</td>
+					<td>@product.CategoryName</td>
+					<td style="max-width: 400px">@product.Notes</td>
+					<td>
+						<div class="btn-group">
+							<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Əməliyyatlar
+							</button>
+							<div class="dropdown-menu">
+								<button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#incomeModal"
+								        data-bs-productName="@product.Name" data-bs-productId="@product.Id" data-bs-firmId="@product.FirmId"
+								        data-bs-unitId="@product.UnitId">
+									<span style="color: blue">Mədaxil</span>
+								</button>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="/products/add?id=@product.Id">Redaktə et</a>
+								<a class="dropdown-item" href="#"><span style="color: blue">Sat</span></a>
+							</div>
+						</div>
+					</td>
+				</tr>
 
-			counter++;
-		}
-		</tbody>
-	</table>
+				counter++;
+			}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 @section Modals

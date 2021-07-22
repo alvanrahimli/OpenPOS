@@ -6,6 +6,7 @@
     Layout = "Shared/_Layout";
     ViewData["title"] = "Satış detalları";
     ViewData["transactions-active"] = "active";
+    ViewData["content-style"] = "font-size: large;";
 }
 
 @if (Model.Transaction == null)
@@ -54,7 +55,7 @@ else
             <th><strong>#</strong></th>
             <th>Məhsul adı</th>
             <th>Miqdar</th>
-            <th>Qiymət</th>
+            <th>Cəmi Qiymət</th>
             </thead>
             <tbody>
             @foreach (var pv in Model.Transaction.IncludedProducts)

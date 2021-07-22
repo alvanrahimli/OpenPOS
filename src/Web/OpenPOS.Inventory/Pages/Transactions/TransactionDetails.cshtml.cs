@@ -11,6 +11,8 @@ namespace OpenPOS.Inventory.Pages.Transactions
     {
         private readonly ITransactionsRepository _transactionsRepository;
         public TransactionDto Transaction { get; set; }
+        
+        // TODO: Place a button to revert transaction
 
         public TransactionDetails(ITransactionsRepository transactionsRepository)
         {

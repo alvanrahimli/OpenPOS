@@ -1,0 +1,44 @@
+@page "/clients"
+@model OpenPOS.Inventory.Pages.Clients.ClientsIndex
+
+@{
+    Layout = "Shared/_Layout";
+    ViewData["clients-active"] = "active";
+	var counter = 1;
+}
+
+<div class="card flex-fill">
+	<div class="card-header">
+		<h5 class="card-title mb-0">Müştəri siyahısı</h5>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-hover my-0">
+		<thead>
+		<tr>
+			<th><strong>#</strong></th>
+			<th>Ad</th>
+			<th>Ilk satış</th>
+			<th>Son satış</th>
+			<th>Borc</th>
+			<th>Qeydlər</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var client in Model.Clients)
+		{
+			<tr>
+				<td><strong>@counter</strong></td>
+				<td>@client.Name</td>
+				<td>@client.FirstSale</td>
+				<td>@client.LastSale</td>
+				<td>@client.Debt</td>
+				<td>@client.Notes</td>
+			</tr>
+
+			counter++;
+		}
+		</tbody>
+	</table>
+	</div>
+</div>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OpenPOS.Domain.Data;
@@ -9,9 +10,10 @@ using OpenPOS.Domain.Data;
 namespace OpenPOS.Domain.Migrations
 {
     [DbContext(typeof(PosContext))]
-    partial class OpenPosContextModelSnapshot : ModelSnapshot
+    [Migration("20210723084823_EnhanceClient")]
+    partial class EnhanceClient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,13 +199,13 @@ namespace OpenPOS.Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<decimal>("Debt")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime?>("FirstSaleDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("LastSaleDate")
+                    b.Property<DateTime>("LastTransactionDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")

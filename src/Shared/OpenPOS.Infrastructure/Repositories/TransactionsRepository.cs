@@ -178,7 +178,8 @@ namespace OpenPOS.Infrastructure.Repositories
                 transactionsQuery = transactionsQuery.OrderByDescending(t => t.Timestamp);
             }
 
-            if (!string.IsNullOrEmpty(filterContext.LimitBy) && (filterContext.FromPrice > 0 || filterContext.ToPrice > 0))
+            // Don't null-check filterContext.LimitBy (UI does not require)
+            if (filterContext.FromPrice > 0 || filterContext.ToPrice > 0)
             {
                 transactionsQuery = filterContext.LimitBy switch
                 {

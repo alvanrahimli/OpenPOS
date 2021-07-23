@@ -37,21 +37,22 @@
 
 					<li class="sidebar-item @ViewData["home-active"]">
 						<a class="sidebar-link" href="/">
-							<i class="align-middle" data-feather="sliders"></i> 
+							<i class="align-middle" data-feather="home"></i> 
 							<span class="align-middle">Ana səhifə</span>
 						</a>
 					</li>
 
 					<li class="sidebar-item @ViewData["sale-active"]">
-						<a class="sidebar-link" href="/sale">
-							<i class="align-middle" data-feather="user"></i>
+						<a class="sidebar-link" href="http://localhost.local:5004/sale" target="_blank">
+							<i class="align-middle" data-feather="shopping-cart"></i>
 							<span class="align-middle">Satış et</span>
+							<i class="align-middle" data-feather="external-link" style="margin-left: 10px"></i>
 						</a>
 					</li>
 
 					<li class="sidebar-item @ViewData["products-active"]">
 						<a href="#products" data-bs-toggle="collapse" class="sidebar-link">
-							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Məhsullar</span>
+							<i class="align-middle" data-feather="tag"></i> <span class="align-middle">Məhsullar</span>
 						</a>
 						<ul id="products" class="sidebar-dropdown list-unstyled" data-bs-parent="#sidebar">
 							<li class="sidebar-item">
@@ -66,29 +67,22 @@
 						</ul>
 					</li>
 					<li class="sidebar-item @ViewData["transactions-active"]">
-						<a href="#transactions" data-bs-toggle="collapse" class="sidebar-link">
-							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Satışlar</span>
+						<a class="sidebar-link" href="/transactions">
+							<i class="align-middle" data-feather="list"></i>
+							<span class="align-middle">Satış et</span>
 						</a>
-						<ul id="transactions" class="sidebar-dropdown list-unstyled" data-bs-parent="#sidebar">
-							<li class="sidebar-item">
-								<a class="sidebar-link" href="/transactions">Bütün satışlar</a>
-							</li>
-							<li class="sidebar-item">
-								<a class="sidebar-link" href="/transactions">Satış detalları</a>
-							</li>
-						</ul>
 					</li>
 				</ul>
 
 				<div class="sidebar-cta">
 					<div class="sidebar-cta-content">
-						<strong class="d-inline-block mb-2">Upgrade to Pro</strong>
+						<strong class="d-inline-block mb-2">Əlaqə</strong>
 						<div class="mb-3 text-sm">
-							Are you looking for more components? Check out our premium version.
+							Təklif və iradlarınızı bildirmək üçün:
 						</div>
 						<div class="d-grid">
-							<a href="https://adminkit.io/pricing" target="_blank" class="btn btn-primary">
-								Upgrade toPro
+							<a href="mailto:alvan@rahim.li" class="btn btn-primary">
+								E-mail göndər
 							</a>
 						</div>
 					</div>

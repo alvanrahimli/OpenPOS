@@ -205,14 +205,23 @@ namespace OpenPOS.Sale.Pages
                         {
                             Name = NewTransaction.ClientName,
                             StoreId = storeId,
-                            Notes = NewTransaction.ClientNotes
+                            Notes = NewTransaction.ClientNotes,
+                            FirstSaleDate = DateTime.UtcNow,
+                            LastSaleDate = DateTime.UtcNow,
+                            Debt = transaction.PaymentMethod == PaymentMethod.Loan ? transaction.TotalPrice : 0
                         };
+
                         await context.Clients.AddAsync(newClient);
                         await context.SaveChangesAsync();
                         transaction.ClientId = newClient.Id;
                     }
                     else
                     {
+                        if (transaction.PaymentMethod == PaymentMethod.Loan)
+                        {
+                            client.Debt += transaction.TotalPrice;
+                        }
+                        client.LastSaleDate = DateTime.UtcNow;
                         transaction.ClientId = client.Id;
                     }
                 }
@@ -233,7 +242,6 @@ namespace OpenPOS.Sale.Pages
             catch (Exception e)
             {
                 Logger.LogError("Error occured: {Error}", e.Message);
-                // _uiMessage = "Yenidən cəhd edin";
                 await AlertifyError("Yenidən cəhd edin");
             }
             finally

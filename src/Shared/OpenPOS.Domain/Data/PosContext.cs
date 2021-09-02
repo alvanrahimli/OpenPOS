@@ -26,7 +26,7 @@ namespace OpenPOS.Domain.Data
         {
             builder.Entity<PosUser>()
                 .HasOne(u => u.SelectedStore)
-                .WithOne(s => s.SelectorUser) // Change this for multiple user selectors for next v2
+                .WithOne(s => s.SelectorUser) // TODO: Change this for multiple user selectors for next v2
                 .HasForeignKey<PosUser>(u => u.SelectedStoreId);
 
             builder.Entity<Store>()
@@ -34,6 +34,8 @@ namespace OpenPOS.Domain.Data
                 .WithMany(u => u.Stores)
                 .HasForeignKey(store => store.UserId);
             
+            // TODO: Enum conversion
+
             base.OnModelCreating(builder);
         }
     }

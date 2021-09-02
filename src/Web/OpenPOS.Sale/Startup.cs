@@ -72,7 +72,7 @@ namespace OpenPOS.Sale
             //     .CreateDbContext());
             services.AddDbContext<PosContext>(builder =>
             {
-                builder.UseNpgsql(Configuration.GetConnectionString("Default"));
+                builder.UseSqlite(Configuration.GetConnectionString("Default"));
             });
 
             services.AddIdentity<PosUser, IdentityRole>()
